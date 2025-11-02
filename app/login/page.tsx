@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { supabase } from "@/lib/supabaseClient";
 import { FormInput } from "@/components";
@@ -16,9 +16,9 @@ export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
 
   const router = useRouter();
-
   const { register, handleSubmit, reset, formState: { errors } } = useForm<AuthFormInputs>();
 
   const onSubmit = async (data: AuthFormInputs) => {
@@ -40,9 +40,7 @@ export default function AuthForm() {
           email: data.email,
           password: data.password,
           options: {
-            data: {
-              display_name: data.display_name,
-            },
+            data: { display_name: data.display_name },
           },
         });
 
@@ -59,16 +57,28 @@ export default function AuthForm() {
     }
   };
 
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        router.replace("/");
+      } else {
+        setCheckingSession(false);
+      }
+    };
+    checkSession();
+  }, [router]);
+
+
+  if (checkingSession) return null;
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-4">
       <h1 className="text-2xl font-bold">
         {isLogin ? "Login" : "Create an Account"}
       </h1>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-6 w-72"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 w-72">
         {!isLogin && (
           <FormInput
             label="Display Name"
@@ -85,10 +95,7 @@ export default function AuthForm() {
           label="Email"
           register={register("email", {
             required: "Email is required",
-            pattern: {
-              value: /\S+@\S+\.\S+/,
-              message: "Invalid email address",
-            },
+            pattern: { value: /\S+@\S+\.\S+/, message: "Invalid email address" },
           })}
           error={errors.email}
         />
