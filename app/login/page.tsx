@@ -10,7 +10,6 @@ type AuthFormInputs = {
   email: string;
   password: string;
   display_name?: string;
-  is_student?: boolean;
 };
 
 export default function AuthForm() {
@@ -43,7 +42,6 @@ export default function AuthForm() {
           options: {
             data: {
               display_name: data.display_name,
-              is_student: data.is_student || false,
             },
           },
         });
@@ -104,17 +102,6 @@ export default function AuthForm() {
           })}
           error={errors.password}
         />
-
-         {!isLogin && (
-           <label className="flex items-center gap-1.5 text-sm">
-              <input
-                type="checkbox"
-                {...register("is_student")}
-                className="w-3 h-3"
-              />
-              I'm a student
-            </label>
-          )}
 
         <button
           type="submit"
