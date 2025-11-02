@@ -28,5 +28,5 @@ export default function Dashboard() {
 
   if (!user) return <div>Please log in</div>;
 
-  return <div>Welcome, {user?.email}</div>;
+  return <div>Welcome, {user?.user_metadata?.display_name}</div>;
 }
