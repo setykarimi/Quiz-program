@@ -1,55 +1,58 @@
 "use client";
 
-import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { supabase } from "@/lib/supabaseClient";
+import { FormInput } from "@/components";
+
+type AuthFormInputs = {
+  email: string;
+  password: string;
+  display_name?: string;
+  is_student?: boolean;
+};
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
-  useEffect(() => {
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session?.user) {
-        router.replace("/dashboard");
-      }
-    };
-    
-    getSession();
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<AuthFormInputs>();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (session?.user) router.replace("/dashboard");
-      }
-    );
-
-    return () => listener.subscription.unsubscribe();
-  }, [router]);
-
-  const handleAuth = async () => {
+  const onSubmit = async (data: AuthFormInputs) => {
     setMessage("");
     setLoading(true);
 
     try {
       if (isLogin) {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+        const { error } = await supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
         });
+
         if (error) throw error;
         setMessage("✅ Logged in successfully!");
+        router.replace("/");
       } else {
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        const { error } = await supabase.auth.signUp({
+          email: data.email,
+          password: data.password,
+          options: {
+            data: {
+              display_name: data.display_name,
+              is_student: data.is_student || false,
+            },
+          },
+        });
+
         if (error) throw error;
 
         setMessage("✅ Signup successful! Check your email for confirmation.");
         setIsLogin(true);
+        reset();
       }
     } catch (err: any) {
       setMessage(`❌ ${err.message}`);
@@ -64,31 +67,65 @@ export default function AuthForm() {
         {isLogin ? "Login" : "Create an Account"}
       </h1>
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="border px-4 py-2 rounded w-72"
-      />
-
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="border px-4 py-2 rounded w-72"
-      />
-
-      <button
-        onClick={handleAuth}
-        disabled={loading}
-        className="bg-indigo-600 text-white px-4 py-2 rounded w-72 disabled:bg-gray-400"
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-6 w-72"
       >
-        {loading ? "Please wait..." : isLogin ? "Log In" : "Sign Up"}
-      </button>
+        {!isLogin && (
+          <FormInput
+            label="Display Name"
+            register={register("display_name", {
+              required: "Display name is required",
+              minLength: { value: 2, message: "Too short" },
+            })}
+            error={errors.display_name}
+          />
+        )}
 
-      {message && <p className="text-sm text-center">{message}</p>}
+        <FormInput
+          type="email"
+          label="Email"
+          register={register("email", {
+            required: "Email is required",
+            pattern: {
+              value: /\S+@\S+\.\S+/,
+              message: "Invalid email address",
+            },
+          })}
+          error={errors.email}
+        />
+
+        <FormInput
+          type="password"
+          label="Password"
+          register={register("password", {
+            required: "Password is required",
+            minLength: { value: 6, message: "At least 6 characters" },
+          })}
+          error={errors.password}
+        />
+
+         {!isLogin && (
+           <label className="flex items-center gap-1.5 text-sm">
+              <input
+                type="checkbox"
+                {...register("is_student")}
+                className="w-3 h-3"
+              />
+              I'm a student
+            </label>
+          )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-orange-600 text-white px-4 py-3 rounded-lg disabled:bg-gray-400 text-sm"
+        >
+          {loading ? "Please wait..." : isLogin ? "Log In" : "Sign Up"}
+        </button>
+      </form>
+
+      {message && <p className="text-sm text-center mt-2">{message}</p>}
 
       <p className="text-sm text-gray-600">
         {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
@@ -96,8 +133,9 @@ export default function AuthForm() {
           onClick={() => {
             setIsLogin(!isLogin);
             setMessage("");
+            reset();
           }}
-          className="text-indigo-600 font-semibold hover:underline"
+          className="text-orange-600 font-semibold hover:underline"
         >
           {isLogin ? "Sign Up" : "Log In"}
         </button>
