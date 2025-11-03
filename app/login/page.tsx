@@ -17,9 +17,10 @@ export default function AuthForm() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
-
   const router = useRouter();
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<AuthFormInputs>();
+
+  const { register, handleSubmit, reset, formState: { errors } } =
+    useForm<AuthFormInputs>();
 
   const onSubmit = async (data: AuthFormInputs) => {
     setMessage("");
@@ -27,16 +28,18 @@ export default function AuthForm() {
 
     try {
       if (isLogin) {
+        // ✅ Login flow
         const { error } = await supabase.auth.signInWithPassword({
           email: data.email,
           password: data.password,
         });
-
         if (error) throw error;
+
         setMessage("✅ Logged in successfully!");
         router.replace("/");
       } else {
-        const { error } = await supabase.auth.signUp({
+        // ✅ Signup flow
+        const { data: signupData, error } = await supabase.auth.signUp({
           email: data.email,
           password: data.password,
           options: {
@@ -45,6 +48,15 @@ export default function AuthForm() {
         });
 
         if (error) throw error;
+
+        // فقط اگه signup موفق بود → برو سراغ سرور برای role
+        if (signupData?.user?.id) {
+          await fetch("/api/auth/setRole", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id: signupData.user.id }),
+          });
+        }
 
         setMessage("✅ Signup successful! Check your email for confirmation.");
         setIsLogin(true);
@@ -57,6 +69,7 @@ export default function AuthForm() {
     }
   };
 
+  // ✅ اگر کاربر لاگین است → اجازه نمایش فرم نده
   useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
@@ -68,7 +81,6 @@ export default function AuthForm() {
     };
     checkSession();
   }, [router]);
-
 
   if (checkingSession) return null;
 
