@@ -36,7 +36,7 @@ export default function AuthForm() {
         if (error) throw error;
 
         setMessage("✅ Logged in successfully!");
-        router.replace("/");
+        router.replace("/dashboard");
       } else {
         // ✅ Signup flow
         const { data: signupData, error } = await supabase.auth.signUp({
@@ -44,7 +44,9 @@ export default function AuthForm() {
           password: data.password,
           options: {
             data: { display_name: data.display_name },
+            emailRedirectTo: `${window.location.origin}/dashboard`
           },
+        
         });
 
         if (error) throw error;
@@ -72,7 +74,7 @@ export default function AuthForm() {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        router.replace("/");
+        router.replace("/dashboard");
       } else {
         setCheckingSession(false);
       }
