@@ -49,12 +49,11 @@ export default function AuthForm() {
 
         if (error) throw error;
 
-        // فقط اگه signup موفق بود → برو سراغ سرور برای role
         if (signupData?.user?.id) {
           await fetch("/api/auth/setRole", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user_id: signupData.user.id }),
+            body: JSON.stringify({ user_id: signupData.user.id , role: "member"}),
           });
         }
 
@@ -69,7 +68,6 @@ export default function AuthForm() {
     }
   };
 
-  // ✅ اگر کاربر لاگین است → اجازه نمایش فرم نده
   useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();

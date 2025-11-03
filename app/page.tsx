@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [exams, setExams] = useState<any[]>([]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -24,9 +25,26 @@ export default function Dashboard() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const fetchExams = async () => {
+      setLoading(true);
+      const { data, error } = await supabase.from("exams").select("*");
+
+      if (error) {
+        console.error(error);
+      } else {
+        setExams(data || []);
+      }
+      setLoading(false);
+    };
+
+    fetchExams();
+  }, []);
+
   if (loading) return <div>Loading...</div>;
 
   if (!user) return <div>Please log in</div>;
+
 
   return <div>Welcome, {user?.user_metadata?.display_name}</div>;
 }
