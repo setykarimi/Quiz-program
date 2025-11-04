@@ -2,26 +2,25 @@
 import { useAuth } from "@/context/auth-context";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/router";
 
 export function Sidebar() {
-  const { role, user } = useAuth();
+  const { role } = useAuth();
   const pathname = usePathname()
 
   const routesByRole: Record<string, { title: string; link: string }[]> = {
 
     admin: [
-      { title: "Exams", link: "/dashboard" },
+      { title: "Exams", link: "/dashboard/exams" },
       { title: "Questions", link: "/questions" },
       { title: "Users", link: "/users" },
       { title: "Settings", link: "/settings" },
     ],
     author: [
-      { title: "Exams", link: "/exams" },
+      { title: "Exams", link: "/dashboard/exams" },
       { title: "Questions", link: "/questions" },
     ],
-    student: [
-      { title: "Exams", link: "/exams" },
+    member: [
+      { title: "Exams", link: "/dashboard/exams" },
     ],
     default: [],
   };
@@ -38,7 +37,7 @@ export function Sidebar() {
         return <Link
           key={route.link}
           href={route.link}
-          className={`text-gray-700 hover:text-orange-600 font-medium px-3 py-2 rounded-lg ${isActive ? "bg-orange-600 text-white shadow-lg shadow-orange-200" : "bg-transparent"}`}
+          className={`text-gray-700 hover:bg-orange-100 font-medium px-3 py-2 rounded-lg transition-colors ${isActive ? "bg-orange-600 text-white shadow-lg shadow-orange-200" : "bg-transparent"}`}
         >
           {route.title}
         </Link>
