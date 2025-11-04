@@ -30,7 +30,7 @@ export function Sidebar() {
   const routes = routesByRole[role ?? "default"] || [];
 
   return (
-    <div className="py-4 px-5 rounded-2xl bg-white flex flex-col gap-3 min-h-[calc(100vh-2rem)]">
+    <div className="py-4 px-5 rounded-xl bg-white flex flex-col gap-3 min-h-[calc(100vh-2rem)]">
       <h2 className="font-bold text-xl mb-4">Quiz Program</h2>
 
       {routes.map((route) => {
