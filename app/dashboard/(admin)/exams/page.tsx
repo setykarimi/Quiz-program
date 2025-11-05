@@ -56,7 +56,7 @@ export default function ExamsPage() {
               {exams.map((item, index) => (
                 <tr
                   key={item.id}
-                  className="border-t hover:bg-gray-50 transition"
+                  className="border-t transition"
                 >
                   <td className="px-4 py-3">{index + 1}</td>
                   <td className="px-4 py-3 font-medium">{item.title}</td>
