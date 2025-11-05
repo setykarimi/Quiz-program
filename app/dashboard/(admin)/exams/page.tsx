@@ -1,4 +1,5 @@
 "use client";
+import CreateExamModal from "@/components/modal/create-exam";
 import { supabase } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
@@ -31,12 +32,7 @@ export default function ExamsPage() {
     <>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold text-gray-800">📘 My Exams</h1>
-        <Link
-          href="/dashboard/exams/create"
-          className="w-8 h-8 text-2xl text-center bg-orange-600 rounded-md text-white shadow transition"
-        >
-          + 
-        </Link>
+        <CreateExamModal />
       </div>
 
       {exams?.length ? (
