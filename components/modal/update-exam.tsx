@@ -24,7 +24,7 @@ interface Props{
 export const UpdateExamModal:FC<Props> = ({ open, setOpen, id })=> {
   const queryClient = useQueryClient();
 
- const { data: exam, isLoading, isError } = useQuery({
+  const { data: exam, isLoading, isError } = useQuery({
     queryKey: ["exam", id],
     queryFn: async () => {
       const { data, error } = await supabase
