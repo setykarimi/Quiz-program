@@ -15,7 +15,7 @@ type FormInputs = {
   description: string;
 };
 
-export default function AlertDialogDemo() {
+export function CreateExamModal() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false); // state کنترل modal
 

@@ -1,5 +1,5 @@
 "use client";
-import CreateExamModal from "@/components/modal/create-exam";
+import { CreateExamModal } from "@/components";
 import { supabase } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
