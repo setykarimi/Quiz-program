@@ -25,7 +25,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </button>
 
           </div>
-          <div className="bg-white p-4 rounded-xl relative z-10">
+          <div className="bg-white p-4 rounded-xl relative z-0">
             {children}
           </div>
         </div>
