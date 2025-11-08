@@ -1,12 +1,12 @@
 "use client";
-import { CreateExamModal } from "@/components";
+import { CreateExamModal, CreateQuestionModal } from "@/components";
 import { supabase } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
 export default function QuestionsPage() {
   const { data: exams, isLoading, isError, error } = useQuery({
-    queryKey: ["exams"],
+    queryKey: ["questions"],
     queryFn: async () => {
       const { data, error } = await supabase.from("questions").select("*")
       if (error) throw error;
@@ -32,7 +32,7 @@ export default function QuestionsPage() {
     <>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold text-gray-800">Questions List</h1>
-        <CreateExamModal />
+        <CreateQuestionModal />
       </div>
 
       {exams?.length ? (
