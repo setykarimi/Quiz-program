@@ -20,7 +20,7 @@ export function CreateQuestionModal() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false); // state کنترل modal
 
-  const { handleSubmit, register, control, formState: { errors }, reset } = useForm<FormInputs>({});
+  const { handleSubmit, register, formState: { errors }, reset } = useForm<FormInputs>({});
 
 
   const mutation = useMutation({
