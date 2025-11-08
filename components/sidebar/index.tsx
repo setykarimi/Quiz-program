@@ -10,16 +10,19 @@ export function Sidebar() {
   const routesByRole: Record<string, { title: string; link: string }[]> = {
 
     admin: [
+      { title: "Dashboard", link: "/dashboard"},
       { title: "Exams", link: "/dashboard/exams" },
       { title: "Questions", link: "/questions" },
       { title: "Users", link: "/users" },
       { title: "Settings", link: "/settings" },
     ],
     author: [
+      { title: "Dashboard", link: "/dashboard"},
       { title: "Exams", link: "/dashboard/exams" },
       { title: "Questions", link: "/questions" },
     ],
     member: [
+      { title: "Dashboard", link: "/dashboard"},
       { title: "Exams", link: "/dashboard/exams" },
     ],
     default: [],
