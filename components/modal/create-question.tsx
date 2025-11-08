@@ -40,8 +40,8 @@ export function CreateQuestionModal() {
   });
 
   const onSubmit = (data: FormInputs) => {
+    console.log("data", data)
     mutation.mutate(data);
-   
   };
 
   return (
@@ -66,9 +66,9 @@ export function CreateQuestionModal() {
               error={errors.title}
             />
             
-            <FormSelect options={[{label: "hi", value: "hi"}, {label: "hi", value: "hi"}]} register={register("type")} label="Question Type" />
+            <FormSelect options={[{label: "hi", value: "hi"}, {label: "hi", value: "hii"}]} register={register("type")} label="Question Type" />
 
-            <FormSelect options={[{label: "hi", value: "hi"}, {label: "hi", value: "hi"}]} register={register("section_id")} label="Section" />
+            <FormSelect options={[{label: "hi", value: 1}, {label: "hi", value: 2}]} register={register("section_id")} label="Section" />
             
             <FormInput
               label="Answer"

@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
 export default function QuestionsPage() {
-  const { data: exams, isLoading, isError, error } = useQuery({
+  const { data: questions, isLoading, isError, error } = useQuery({
     queryKey: ["questions"],
     queryFn: async () => {
       const { data, error } = await supabase.from("questions").select("*")
@@ -17,14 +17,14 @@ export default function QuestionsPage() {
   if (isLoading)
     return (
       <div className="text-gray-500 text-center mt-10 animate-pulse">
-        Loading exams...
+        Loading questions...
       </div>
     );
 
   if (isError)
     return (
       <div className="text-red-500 text-center mt-10">
-        Error loading exams: {error.message}
+        Error loading questions: {error.message}
       </div>
     );
 
@@ -35,7 +35,7 @@ export default function QuestionsPage() {
         <CreateQuestionModal />
       </div>
 
-      {exams?.length ? (
+      {questions?.length ? (
         <div className="overflow-x-auto rounded-lg shadow border border-gray-100 z-0">
           <table className="min-w-full bg-white text-sm text-gray-700">
             <thead className="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
@@ -49,7 +49,7 @@ export default function QuestionsPage() {
               </tr>
             </thead>
             <tbody>
-              {exams.map((item, index) => (
+              {questions.map((item, index) => (
                 <tr
                   key={item.id}
                   className="border-t transition"
@@ -64,7 +64,7 @@ export default function QuestionsPage() {
                  
                   <td className="px-4 py-3 text-center">
                     <Link
-                      href={`/exams/${item.id}`}
+                      href={`/questions/${item.id}`}
                       className="text-orange-600 hover:text-indigo-800 font-medium"
                     >
                       View
@@ -77,7 +77,7 @@ export default function QuestionsPage() {
         </div>
       ) : (
         <p className="text-gray-500 text-center py-10">
-          You don’t have any exams yet.
+          You don’t have any questions yet.
         </p>
       )}
     </>
