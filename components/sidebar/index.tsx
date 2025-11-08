@@ -1,14 +1,16 @@
 "use client";
 import { useAuth } from "@/context/auth-context";
+import { useSetting } from "@/context/setting-context";
+import { CloseCircle, CloseSquare, PenClose } from "iconsax-reactjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export function Sidebar() {
   const { role } = useAuth();
+  const { handleShowSidebar, showSidebar } = useSetting()
   const pathname = usePathname()
 
   const routesByRole: Record<string, { title: string; link: string }[]> = {
-
     admin: [
       { title: "Dashboard", link: "/dashboard"},
       { title: "Exams", link: "/dashboard/exams" },
@@ -28,12 +30,16 @@ export function Sidebar() {
     default: [],
   };
 
-
   const routes = routesByRole[role ?? "default"] || [];
 
   return (
-    <div className="py-4 px-5 rounded-xl bg-white flex flex-col gap-3 min-h-[calc(100vh-2rem)]">
-      <h2 className="font-bold text-xl mb-4">Quiz Program</h2>
+    <div className={`bg-white flex-col gap-3 py-4 px-5 ${showSidebar ? "z-20 flex fixed top-0 left-0 h-screen rounded-none w-60" : "lg:flex hidden rounded-xl min-h-[calc(100vh-2rem)]"}`}>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="font-bold text-xl ">Quiz Program</h2>
+        <button className="lg:hidden block" onClick={()=> handleShowSidebar()}>
+          <CloseSquare />
+        </button>
+      </div>
 
       {routes.map((route) => {
         const isActive = pathname == route.link
