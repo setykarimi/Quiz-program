@@ -9,9 +9,10 @@ type FormInputProps = {
   placeholder?: string;
   register: UseFormRegisterReturn;
   error?: FieldError;
+  min?: string; // <-- add min prop
 };
 
-export const FormInput :FC<FormInputProps> = ({ label, type = "text", placeholder, register, error }) => {
+export const FormInput: FC<FormInputProps> = ({ label, type = "text", placeholder, register, error, min }) => {
   return (
     <div className="flex flex-col gap-1">
       {label && <label className="text-xs">{label}</label>}
@@ -19,6 +20,7 @@ export const FormInput :FC<FormInputProps> = ({ label, type = "text", placeholde
         type={type}
         placeholder={placeholder}
         {...register}
+        min={min}
         className={`bg-[#EDF5F4] px-4 py-3 outline-none rounded-lg text-sm border placeholder:text-[#9EA3A2] ${
           error ? "border-red-700" : "border-transparent"
         }`}
@@ -26,4 +28,4 @@ export const FormInput :FC<FormInputProps> = ({ label, type = "text", placeholde
       {error && <p className="text-red-700 text-xs">{error.message}</p>}
     </div>
   );
-}
+};
