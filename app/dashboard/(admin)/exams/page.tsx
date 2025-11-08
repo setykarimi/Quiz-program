@@ -36,7 +36,7 @@ export default function ExamsPage() {
       </div>
 
       {exams?.length ? (
-        <div className="overflow-x-auto rounded-lg shadow border border-gray-100">
+        <div className="overflow-x-auto rounded-lg shadow border border-gray-100 z-0">
           <table className="min-w-full bg-white text-sm text-gray-700">
             <thead className="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
               <tr>
