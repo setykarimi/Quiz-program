@@ -5,8 +5,13 @@ import { supabase } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { HamburgerMenu } from "iconsax-reactjs";
+import { useState } from "react";
+import { UpdateExamModal } from "@/components/modal/update-exam";
 
 export default function ExamsPage() {
+  const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId]= useState<number | null>(null)
+
   const { data: exams, isLoading, isError, error } = useQuery({
     queryKey: ["exams"],
     queryFn: async () => {
@@ -30,15 +35,19 @@ export default function ExamsPage() {
       </div>
     );
 
-  // --- Fake Handlers (توی پروژه واقعی خودت پیاده کن)
-  const handleEdit = (id: number) => alert(`Edit exam ${id}`);
+  const handleEdit = async (id: number) =>  {
+    await setSelectedId(id)
+
+    setOpen(true)
+  };
+
   const handleDelete = (id: number) => alert(`Delete exam ${id}`);
 
   return (
     <>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold text-gray-800">Exams List</h1>
-        <CreateExamModal />
+        <CreateExamModal/>
       </div>
 
       {exams?.length ? (
@@ -79,7 +88,7 @@ export default function ExamsPage() {
 
                       <DropdownMenu.Portal>
                         <DropdownMenu.Content
-                          className="min-w-[160px] bg-white rounded-md shadow-lg border border-gray-100 p-1 text-sm"
+                          className="min-w-40 bg-white rounded-md shadow-lg border border-gray-100 p-1 text-sm"
                           sideOffset={5}
                         >
                           <DropdownMenu.Item
@@ -120,6 +129,9 @@ export default function ExamsPage() {
           You don’t have any exams yet.
         </p>
       )}
+
+      <UpdateExamModal open={open} id={selectedId} setOpen={setOpen}/>
+
     </>
   );
 }
