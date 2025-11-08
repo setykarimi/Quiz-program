@@ -109,7 +109,7 @@ export default function ExamsPage() {
 
                           <DropdownMenu.Item asChild>
                             <Link
-                              href={`/exams/${item.id}`}
+                              href={`/dashboard/exams/${item.id}`}
                               className="block px-3 py-2 rounded-md text-blue-600 hover:bg-blue-50 outline-0"
                             >
                               🔍 View Details
