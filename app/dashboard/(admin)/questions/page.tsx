@@ -42,9 +42,9 @@ export default function QuestionsPage() {
               <tr>
                 <th className="px-4 py-3 text-left">#</th>
                 <th className="px-4 py-3 text-left">Title</th>
-                <th className="px-4 py-3 text-left">Description</th>
-                <th className="px-4 py-3 text-left">Started At</th>
-                <th className="px-4 py-3 text-left">End At</th>
+                <th className="px-4 py-3 text-left">Type</th>
+                <th className="px-4 py-3 text-left">Section</th>
+                <th className="px-4 py-3 text-left">Answer</th>
                 <th className="px-4 py-3 text-center">Actions</th>
               </tr>
             </thead>
@@ -57,10 +57,10 @@ export default function QuestionsPage() {
                   <td className="px-4 py-3">{index + 1}</td>
                   <td className="px-4 py-3 font-medium">{item.title}</td>
                   <td className="px-4 py-3 text-gray-500 truncate max-w-[300px]">
-                    {item.description || "—"}
+                    {item.type || "—"}
                   </td>
-                  <td className="px-4 py-3 text-gray-400"> {new Date(item.start_date).toLocaleDateString()} </td>
-                  <td className="px-4 py-3 text-gray-400"> {new Date(item.end_date).toLocaleDateString()} </td>
+                  <td className="px-4 py-3 text-gray-400"> {item.section_id} </td>
+                  <td className="px-4 py-3 text-gray-400"> {item.answer} </td>
                  
                   <td className="px-4 py-3 text-center">
                     <Link
