@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/context/auth-context";
 import { ReactNode, useState } from "react";
+import { SettingProvider } from "@/context/setting-context";
 
 export default function Providers({ children }: { children: ReactNode }) {
   // ✅ ساختن QueryClient فقط یکبار در سمت کلاینت
@@ -10,7 +11,11 @@ export default function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+        <SettingProvider>
+          {children}
+        </SettingProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
