@@ -4,11 +4,11 @@ import { supabase } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
-export default function ExamsPage() {
+export default function QuestionsPage() {
   const { data: exams, isLoading, isError, error } = useQuery({
     queryKey: ["exams"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("exams").select("*").order("id", { ascending: false });
+      const { data, error } = await supabase.from("questions").select("*")
       if (error) throw error;
       return data;
     },
@@ -31,7 +31,7 @@ export default function ExamsPage() {
   return (
     <>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-gray-800">Exams List</h1>
+        <h1 className="text-xl font-bold text-gray-800">Questions List</h1>
         <CreateExamModal />
       </div>
 

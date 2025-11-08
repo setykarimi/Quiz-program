@@ -14,7 +14,7 @@ export function Sidebar() {
     admin: [
       { title: "Dashboard", link: "/dashboard"},
       { title: "Exams", link: "/dashboard/exams" },
-      { title: "Questions", link: "/questions" },
+      { title: "Questions", link: "/dashboard/questions" },
       { title: "Users", link: "/users" },
       { title: "Settings", link: "/settings" },
     ],
