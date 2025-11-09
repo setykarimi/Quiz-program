@@ -15,7 +15,7 @@ export function Sidebar() {
       { title: "Dashboard", link: "/dashboard"},
       { title: "Exams", link: "/dashboard/exams" },
       { title: "Questions", link: "/dashboard/questions" },
-      { title: "Users", link: "/users" },
+      { title: "Users", link: "/dashboard/users" },
       { title: "Settings", link: "/settings" },
     ],
     author: [
