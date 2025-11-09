@@ -58,14 +58,14 @@ export default function ExamsPage() {
 
   if (isLoading)
     return (
-      <div className="text-gray-500 text-center mt-10 animate-pulse">
+      <div className="text-gray-500 text-center my-10 animate-pulse">
         Loading exams...
       </div>
     );
 
   if (isError)
     return (
-      <div className="text-red-500 text-center mt-10">
+      <div className="text-red-500 text-center my-10">
         Error loading exams: {error.message}
       </div>
     );
