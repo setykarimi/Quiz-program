@@ -1,16 +1,30 @@
 "use client";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { CreateExamModal } from "@/components";
+import { CreateExamModal, DeleteConfirmDialog, UpdateExamModal } from "@/components";
 import { supabase } from "@/lib/supabaseClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { HamburgerMenu } from "iconsax-reactjs";
 import { useState } from "react";
-import { UpdateExamModal } from "@/components/modal/update-exam";
 
 export default function ExamsPage() {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId]= useState<number | null>(null)
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  const handleDeleteClick = (id: number) => {
+    setSelectedId(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedId !== null) {
+      deleteHandler(selectedId);
+    }
+    setDeleteDialogOpen(false);
+  };
 
   const { data: exams, isLoading, isError, error } = useQuery({
     queryKey: ["exams"],
@@ -20,6 +34,27 @@ export default function ExamsPage() {
       return data;
     },
   });
+
+  const {mutate: deleteHandler} = useMutation({
+    mutationFn: async (id:number) => {
+      const { error } = await supabase.from("exams").delete().eq("id", id); 
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["exams"] });
+      setOpen(false);
+    },
+    onError: (error: any) => {
+      console.log(error.message || "Failed to update exam");
+    }
+  });
+
+  
+
+  const handleEdit = (id: number) =>  {
+    setSelectedId(id)
+    setOpen(true)
+  };
 
   if (isLoading)
     return (
@@ -34,14 +69,6 @@ export default function ExamsPage() {
         Error loading exams: {error.message}
       </div>
     );
-
-  const handleEdit = async (id: number) =>  {
-    await setSelectedId(id)
-
-    setOpen(true)
-  };
-
-  const handleDelete = (id: number) => alert(`Delete exam ${id}`);
 
   return (
     <>
@@ -99,7 +126,7 @@ export default function ExamsPage() {
                           </DropdownMenu.Item>
 
                           <DropdownMenu.Item
-                            onClick={() => handleDelete(item.id)}
+                            onClick={() => handleDeleteClick(item.id)}
                             className="px-3 py-2 rounded-md text-red-600 hover:bg-red-50 cursor-pointer outline-0"
                           >
                             🗑️ Delete
@@ -131,6 +158,11 @@ export default function ExamsPage() {
       )}
 
       <UpdateExamModal open={open} id={selectedId} setOpen={setOpen}/>
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        setOpen={setDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+      />
 
     </>
   );
