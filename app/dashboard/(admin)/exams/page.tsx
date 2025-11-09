@@ -11,7 +11,6 @@ export default function ExamsPage() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId]= useState<number | null>(null)
-
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const handleDeleteClick = (id: number) => {

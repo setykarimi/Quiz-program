@@ -82,51 +82,51 @@ export const UpdateExamModal:FC<Props> = ({ open, setOpen, id })=> {
             </Dialog.Title>
 
             {isLoading ? "Loading ..." : isError ? "Error fetching data" : !exam ? "There is no Exam with this id" : 
-                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                <FormInput
+                    label="Title"
+                    register={register("title", { required: "Title is required" })}
+                    error={errors.title}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
                     <FormInput
-                        label="Title"
-                        register={register("title", { required: "Title is required" })}
-                        error={errors.title}
+                        type="date"
+                        label="Start date"
+                        register={register("start_date", { required: "Start date is required" })}
+                        error={errors.start_date}
                     />
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <FormInput
-                            type="date"
-                            label="Start date"
-                            register={register("start_date", { required: "Start date is required" })}
-                            error={errors.start_date}
-                        />
-
-                        <FormInput
-                            type="date"
-                            label="End date"
-                            register={register("end_date", {
-                            required: "End date is required",
-                            validate: value => !startDate || value >= startDate || "End date must be after start date"
-                            })}
-                            error={errors.end_date}
-                            min={startDate}
-                        />
-                    </div>
-
-                    <TextAreaInput
-                        label="Description"
-                        register={register("description")}
-                        error={errors.description}
+                    <FormInput
+                        type="date"
+                        label="End date"
+                        register={register("end_date", {
+                        required: "End date is required",
+                        validate: value => !startDate || value >= startDate || "End date must be after start date"
+                        })}
+                        error={errors.end_date}
+                        min={startDate}
                     />
+                </div>
 
-                    <div className="flex justify-end gap-2 mt-6">
-                        <Dialog.Close asChild>
-                            <button className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 transition">
-                            Cancel
-                            </button>
-                        </Dialog.Close>
+                <TextAreaInput
+                    label="Description"
+                    register={register("description")}
+                    error={errors.description}
+                />
 
-                        <button type="submit" disabled={mutation.isPending} className="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition">
-                            {mutation.isPending ? "Updating..." : "Update Exam"}
+                <div className="flex justify-end gap-2 mt-6">
+                    <Dialog.Close asChild>
+                        <button className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 transition">
+                        Cancel
                         </button>
-                    </div>
-                </form>
+                    </Dialog.Close>
+
+                    <button type="submit" disabled={mutation.isPending} className="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition">
+                        {mutation.isPending ? "Updating..." : "Update Exam"}
+                    </button>
+                </div>
+              </form>
             }
             
         </Dialog.Content>

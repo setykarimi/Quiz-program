@@ -11,8 +11,6 @@ export default function AdminsTable() {
   if (isError)
     return <div className="text-red-500 text-center my-10">Error: {error.message}</div>;
 
-  console.log("data", users?.users?.users)
-
   return (
     <div className="overflow-x-auto rounded-lg shadow border border-gray-100">
       <table className="min-w-full bg-white text-sm text-gray-700">
