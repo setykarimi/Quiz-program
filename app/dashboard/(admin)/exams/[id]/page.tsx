@@ -14,7 +14,6 @@ export default function ExamClient() {
   const id = params.id;
   const queryClient = useQueryClient();
 
-  // گرفتن اطلاعات آزمون
   const { data: exam, isLoading, error, isError } = useQuery({
     queryKey: ["exam", id],
     queryFn: async () => {
@@ -25,8 +24,7 @@ export default function ExamClient() {
     enabled: !!id,
   });
 
-  // گرفتن سوالات
-  const { data: questions } = useQuery({
+  const { data: questions, isLoading: loadingQuestions } = useQuery({
     queryKey: ["questions"],
     queryFn: async () => {
       const { data, error } = await supabase.from("questions").select("*").order("id");
@@ -36,7 +34,6 @@ export default function ExamClient() {
     enabled: !!id,
   });
 
-  // گرفتن سوالات اختصاص داده شده به آزمون
   const { data: examQuestions } = useQuery({
     queryKey: ["exam-questions", id],
     queryFn: async () => {
@@ -51,7 +48,6 @@ export default function ExamClient() {
     defaultValues: { questions: [] }
   });
 
-  // وقتی داده‌ها لود شد، checkboxها رو set می‌کنیم
   useEffect(() => {
     if (examQuestions) {
       reset({ questions: examQuestions.map(q => q.question_id) });
@@ -75,7 +71,7 @@ export default function ExamClient() {
     assignQuestionsMutation.mutate(data.questions);
   };
 
-  if (isLoading) return <div className="text-gray-500 text-center my-10 animate-pulse">Loading exam...</div>;
+  if (isLoading || loadingQuestions) return <div className="text-gray-500 text-center my-10 animate-pulse">Loading exam...</div>;
   if (isError) return <div className="text-red-500 text-center my-10">Error: {error.message}</div>;
 
   return (
@@ -88,12 +84,12 @@ export default function ExamClient() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <h3 className="font-bold mb-2">Questions</h3>
+        <h3 className="font-bold mb-2 border-t border-t-gray-200 pt-4">Questions</h3>
         <Controller
           name="questions"
           control={control}
           render={({ field }) => (
-            <div className="flex flex-col gap-2 max-h-96 overflow-y-auto p-2">
+            <div className="flex flex-col gap-2 max-h-96 overflow-y-auto">
               {questions?.map(q => (
                 <label key={q.id} className="flex items-center gap-2 p-1 hover:bg-gray-100 cursor-pointer border-b border-b-gray-200 pb-4">
                   <input
@@ -106,9 +102,9 @@ export default function ExamClient() {
                         field.onChange([...field.value, q.id]);
                       }
                     }}
-                    className="w-4 h-4"
+                    className="w-3 h-3"
                   />
-                  <span>{q.title}</span>
+                  <span className="text-sm">{q.title}</span>
                 </label>
               ))}
             </div>
