@@ -27,11 +27,7 @@ export const UpdateExamModal:FC<Props> = ({ open, setOpen, id })=> {
   const { data: exam, isLoading, isError } = useQuery({
     queryKey: ["exam", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("exams")
-        .select("*")
-        .eq("id", id)
-        .single(); 
+      const { data, error } = await supabase.from("exams").select("*").eq("id", id).single(); 
       if (error) throw error;
       return data;
     },

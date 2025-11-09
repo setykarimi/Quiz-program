@@ -5,4 +5,6 @@ export * from './form/select-box'
 export * from './sidebar'
 
 export * from './modal/create-exam'
+export * from './modal/update-exam'
 export * from './modal/create-question'
+export * from './modal/delete-confirm'
