@@ -52,7 +52,7 @@ export default function AuthForm() {
         if (error) throw error;
 
         if (signupData?.user?.id) {
-          await fetch("/api/auth/setRole", {
+          await fetch("/api/auth/set-role", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ user_id: signupData.user.id , role: "member"}),
