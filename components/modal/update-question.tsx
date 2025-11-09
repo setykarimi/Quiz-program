@@ -63,7 +63,8 @@ export const UpdateQuestionModal:FC<Props> = ({ open, setOpen, id }) => {
       reset({
         title: question.title, 
         answer: question.answer,
-        section_id: question.section_id
+        section_id: question.section_id,
+        type: question.type
       })
     }
   },[isLoading])
