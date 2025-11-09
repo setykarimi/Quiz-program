@@ -89,9 +89,9 @@ export default function ExamClient() {
           name="questions"
           control={control}
           render={({ field }) => (
-            <div className="flex flex-col gap-2 max-h-96 overflow-y-auto">
+            <div className="flex flex-col max-h-96 overflow-y-auto">
               {questions?.map(q => (
-                <label key={q.id} className="flex items-center gap-2 p-1 hover:bg-gray-100 cursor-pointer border-b border-b-gray-200 pb-4">
+                <label key={q.id} className="flex items-center gap-2 px-2 hover:bg-gray-100 cursor-pointer border-b border-b-gray-200 py-4">
                   <input
                     type="checkbox"
                     checked={field.value.includes(q.id)}
