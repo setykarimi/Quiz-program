@@ -1,13 +1,14 @@
 "use client";
-import { CreateQuestionModal, UpdateQuestionModal } from "@/components";
+import { CreateQuestionModal, DeleteConfirmDialog, UpdateQuestionModal } from "@/components";
 import { supabase } from "@/lib/supabaseClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { HamburgerMenu } from "iconsax-reactjs";
 import Link from "next/link";
 import { DropdownMenu } from "radix-ui";
 import { useState } from "react";
 
 export default function QuestionsPage() {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId]= useState<number | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -21,6 +22,20 @@ export default function QuestionsPage() {
     },
   });
 
+  const {mutate: deleteHandler} = useMutation({
+    mutationFn: async (id:number) => {
+      const { error } = await supabase.from("questions").delete().eq("id", id); 
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["questions"] });
+      setOpen(false);
+    },
+    onError: (error: any) => {
+      console.log(error.message || "Failed to update question");
+    }
+  });
+
   const handleEdit = (id: number) =>  {
     setSelectedId(id)
     setOpen(true)
@@ -29,6 +44,13 @@ export default function QuestionsPage() {
   const handleDeleteClick = (id: number) => {
     setSelectedId(id);
     setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedId !== null) {
+      deleteHandler(selectedId);
+    }
+    setDeleteDialogOpen(false);
   };
 
   if (isLoading) return (<div className="text-gray-500 text-center my-10 animate-pulse">Loading questions...</div>);
@@ -123,6 +145,11 @@ export default function QuestionsPage() {
       )}
 
       <UpdateQuestionModal open={open} id={selectedId} setOpen={setOpen}/>
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        setOpen={setDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+      />
     </>
   );
 }
