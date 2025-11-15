@@ -1,12 +1,14 @@
 "use client";
 import { useAuth } from "@/context/auth-context";
 import { useSetting } from "@/context/setting-context";
-import { CloseCircle, CloseSquare, PenClose } from "iconsax-reactjs";
+import { supabase } from "@/lib/supabaseClient";
+import { CloseSquare, Logout } from "iconsax-reactjs";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function Sidebar() {
   const { role } = useAuth();
+  const router = useRouter()
   const { handleShowSidebar, showSidebar } = useSetting()
   const pathname = usePathname()
 
@@ -30,6 +32,15 @@ export function Sidebar() {
     default: [],
   };
 
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Logout error:", error.message);
+    } else {
+      router.replace("/login") 
+    }
+  }
+
   const routes = routesByRole[role ?? "default"] || [];
 
   return (
@@ -51,6 +62,11 @@ export function Sidebar() {
           {route.title}
         </Link>
       })}
+
+      <button className="mt-auto text-left text-gray-700 hover:bg-orange-100 font-medium p-2 rounded-lg transition-colors flex items-center gap-2 cursor-pointer" onClick={()=>handleLogout()}>
+        <Logout />
+        Logout
+      </button>
     </div>
   );
 }
