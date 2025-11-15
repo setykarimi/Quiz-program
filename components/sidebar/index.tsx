@@ -23,11 +23,12 @@ export function Sidebar() {
     author: [
       { title: "Dashboard", link: "/dashboard"},
       { title: "Exams", link: "/dashboard/exams" },
-      { title: "Questions", link: "/questions" },
+      { title: "Questions", link: "/dashboard/questions" },
     ],
     member: [
       { title: "Dashboard", link: "/dashboard"},
       { title: "Exams", link: "/dashboard/exams" },
+      { title: "User exams", link: "/dashboard/member/user-exams" },
     ],
     default: [],
   };
