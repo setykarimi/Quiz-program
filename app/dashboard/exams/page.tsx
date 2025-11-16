@@ -6,12 +6,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { HamburgerMenu } from "iconsax-reactjs";
 import { useState } from "react";
+import { useAuth } from "@/context/auth-context";
+import { ExamSigninDialog } from "@/components/modal/exam-sign-in";
 
 export default function ExamsPage() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId]= useState<number | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [examDialogOpen, setExamDialogOpen] = useState(false);
+  const {role, user} = useAuth()
 
   const handleDeleteClick = (id: number) => {
     setSelectedId(id);
@@ -48,8 +52,28 @@ export default function ExamsPage() {
     }
   });
 
-  
+  const {mutate: signInExamHandler} = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("user_exams").insert({
+        exam_id: selectedId,
+        user_id: user.id
+      }) 
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user_exams"] });
+      setOpen(false);
+    },
+    onError: (error: any) => {
+      console.log(error.message || "Failed to insert exam in user exam table");
+    }
+  });
 
+  const handleSignIn = (id:number) => {
+    setSelectedId(id)
+    setExamDialogOpen(true)
+  }
+  
   const handleEdit = (id: number) =>  {
     setSelectedId(id)
     setOpen(true)
@@ -105,45 +129,53 @@ export default function ExamsPage() {
                   </td>
 
                   <td className="px-4 py-3 text-center">
-                    <DropdownMenu.Root>
-                      <DropdownMenu.Trigger asChild>
-                        <button className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 outline-0">
-                          <HamburgerMenu className="w-5 h-5 text-gray-600" />
-                        </button>
-                      </DropdownMenu.Trigger>
+                    {
+                      role != "member" ? 
+                        <DropdownMenu.Root>
+                          <DropdownMenu.Trigger asChild>
+                            <button className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 outline-0">
+                              <HamburgerMenu className="w-5 h-5 text-gray-600" />
+                            </button>
+                          </DropdownMenu.Trigger>
 
-                      <DropdownMenu.Portal>
-                        <DropdownMenu.Content
-                          className="min-w-40 bg-white rounded-md shadow-lg border border-gray-100 p-1 text-sm"
-                          sideOffset={5}
-                        >
-                          <DropdownMenu.Item
-                            onClick={() => handleEdit(item.id)}
-                            className="px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer outline-0"
-                          >
-                            ✏️ Edit
-                          </DropdownMenu.Item>
-
-                          <DropdownMenu.Item
-                            onClick={() => handleDeleteClick(item.id)}
-                            className="px-3 py-2 rounded-md text-red-600 hover:bg-red-50 cursor-pointer outline-0"
-                          >
-                            🗑️ Delete
-                          </DropdownMenu.Item>
-
-                          <DropdownMenu.Separator className="h-px bg-gray-100 my-1" />
-
-                          <DropdownMenu.Item asChild>
-                            <Link
-                              href={`/dashboard/exams/${item.id}`}
-                              className="block px-3 py-2 rounded-md text-blue-600 hover:bg-blue-50 outline-0"
+                          <DropdownMenu.Portal>
+                            <DropdownMenu.Content
+                              className="min-w-40 bg-white rounded-md shadow-lg border border-gray-100 p-1 text-sm"
+                              sideOffset={5}
                             >
-                              🔍 View Details
-                            </Link>
-                          </DropdownMenu.Item>
-                        </DropdownMenu.Content>
-                      </DropdownMenu.Portal>
-                    </DropdownMenu.Root>
+                              <DropdownMenu.Item
+                                onClick={() => handleEdit(item.id)}
+                                className="px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 cursor-pointer outline-0"
+                              >
+                                ✏️ Edit
+                              </DropdownMenu.Item>
+
+                              {
+                                role == "admin" && 
+                                <DropdownMenu.Item
+                                  onClick={() => handleDeleteClick(item.id)}
+                                  className="px-3 py-2 rounded-md text-red-600 hover:bg-red-50 cursor-pointer outline-0"
+                                >
+                                🗑️ Delete
+                                </DropdownMenu.Item>
+                              }
+
+                              <DropdownMenu.Separator className="h-px bg-gray-100 my-1" />
+
+                              <DropdownMenu.Item asChild>
+                                <Link
+                                  href={`/dashboard/exams/${item.id}`}
+                                  className="block px-3 py-2 rounded-md text-blue-600 hover:bg-blue-50 outline-0"
+                                >
+                                  🔍 View Details
+                                </Link>
+                              </DropdownMenu.Item>
+                            </DropdownMenu.Content>
+                          </DropdownMenu.Portal>
+                        </DropdownMenu.Root>
+                        :
+                        <button className="cursor-pointer bg-orange-400 hover:bg-orange-600 transition-colors text-white py-1 px-2 rounded" onClick={()=> handleSignIn(item.id)}>Sign in</button>
+                    }
                   </td>
                 </tr>
               ))}
@@ -156,7 +188,9 @@ export default function ExamsPage() {
         </p>
       )}
 
+
       <UpdateExamModal open={open} id={selectedId} setOpen={setOpen}/>
+      <ExamSigninDialog open={examDialogOpen} onConfirm={signInExamHandler} setOpen={setExamDialogOpen}/>
       <DeleteConfirmDialog
         open={deleteDialogOpen}
         setOpen={setDeleteDialogOpen}
