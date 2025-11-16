@@ -74,8 +74,6 @@ export default function ExamsPage() {
       </div>
     );
 
-    console.log("userExams", userExams)
-
   return (
     <>
       <div className="flex items-center justify-between mb-6">
