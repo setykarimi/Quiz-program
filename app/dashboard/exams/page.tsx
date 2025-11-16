@@ -8,14 +8,16 @@ import { HamburgerMenu } from "iconsax-reactjs";
 import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
 import { ExamSigninDialog } from "@/components/modal/exam-sign-in";
+import { useRouter } from "next/navigation";
 
 export default function ExamsPage() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [selectedId, setSelectedId]= useState<number | null>(null)
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [examDialogOpen, setExamDialogOpen] = useState(false);
-  const {role, user} = useAuth()
+  const { role, user } = useAuth();
+  const router = useRouter();
 
   const handleDeleteClick = (id: number) => {
     setSelectedId(id);
@@ -23,81 +25,85 @@ export default function ExamsPage() {
   };
 
   const handleConfirmDelete = () => {
-    if (selectedId !== null) {
-      deleteHandler(selectedId);
-    }
+    if (selectedId !== null) deleteHandler(selectedId);
     setDeleteDialogOpen(false);
   };
 
   const { data: exams, isLoading, isError, error } = useQuery({
     queryKey: ["exams"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("exams").select("*").order("id", { ascending: false });
+      const { data, error } = await supabase
+        .from("exams")
+        .select("*")
+        .order("id", { ascending: false });
+
       if (error) throw error;
       return data;
     },
   });
 
-  const {mutate: deleteHandler} = useMutation({
-    mutationFn: async (id:number) => {
-      const { error } = await supabase.from("exams").delete().eq("id", id); 
+  const { data: userExams } = useQuery({
+    queryKey: ["user_exams"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_exams")
+        .select("exam_id")
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const registeredExamIds = userExams?.map((u) => u.exam_id) ?? [];
+
+  const { mutate: deleteHandler } = useMutation({
+    mutationFn: async (id: number) => {
+      const { error } = await supabase.from("exams").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["exams"] });
       setOpen(false);
     },
-    onError: (error: any) => {
-      console.log(error.message || "Failed to update exam");
-    }
   });
 
-  const {mutate: signInExamHandler} = useMutation({
+  const { mutate: signInExamHandler } = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("user_exams").insert({
         exam_id: selectedId,
-        user_id: user.id
-      }) 
+        user_id: user.id,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user_exams"] });
-      setOpen(false);
+      // queryClient.invalidateQueries({ queryKey: ["user_exams"] });
+      setExamDialogOpen(false);
+      router.push("/dashboard/member/user-exams");
     },
-    onError: (error: any) => {
-      console.log(error.message || "Failed to insert exam in user exam table");
-    }
   });
 
-  const handleSignIn = (id:number) => {
-    setSelectedId(id)
-    setExamDialogOpen(true)
-  }
-  
-  const handleEdit = (id: number) =>  {
-    setSelectedId(id)
-    setOpen(true)
+  const handleSignIn = (id: number) => {
+    setSelectedId(id);
+    setExamDialogOpen(true);
+  };
+
+  const handleEdit = (id: number) => {
+    setSelectedId(id);
+    setOpen(true);
   };
 
   if (isLoading)
-    return (
-      <div className="text-gray-500 text-center my-10 animate-pulse">
-        Loading exams...
-      </div>
-    );
+    return <div className="text-gray-500 text-center my-10 animate-pulse">Loading exams...</div>;
 
   if (isError)
-    return (
-      <div className="text-red-500 text-center my-10">
-        Error loading exams: {error.message}
-      </div>
-    );
+    return <div className="text-red-500 text-center my-10">Error loading exams: {error.message}</div>;
 
   return (
     <>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold text-gray-800">Exams List</h1>
-        <CreateExamModal/>
+        <CreateExamModal />
       </div>
 
       {exams?.length ? (
@@ -114,23 +120,25 @@ export default function ExamsPage() {
               </tr>
             </thead>
             <tbody>
-              {exams.map((item, index) => (
-                <tr key={item.id} className="border-t transition">
-                  <td className="px-4 py-3">{index + 1}</td>
-                  <td className="px-4 py-3 font-medium">{item.title}</td>
-                  <td className="px-4 py-3 text-gray-500 truncate max-w-[300px]">
-                    {item.description || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-gray-400">
-                    {new Date(item.start_date).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3 text-gray-400">
-                    {new Date(item.end_date).toLocaleDateString()}
-                  </td>
+              {exams.map((item, index) => {
+                const isRegistered = registeredExamIds.includes(item.id);
 
-                  <td className="px-4 py-3 text-center">
-                    {
-                      role != "member" ? 
+                return (
+                  <tr key={index} className="border-t transition">
+                    <td className="px-4 py-3">{index + 1}</td>
+                    <td className="px-4 py-3 font-medium">{item.title}</td>
+                    <td className="px-4 py-3 text-gray-500 truncate max-w-[300px]">
+                      {item.description || "—"}
+                    </td>
+                    <td className="px-4 py-3 text-gray-400">
+                      {new Date(item.start_date).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-3 text-gray-400">
+                      {new Date(item.end_date).toLocaleDateString()}
+                    </td>
+
+                    <td className="px-4 py-3 text-center">
+                      {role !== "member" ? (
                         <DropdownMenu.Root>
                           <DropdownMenu.Trigger asChild>
                             <button className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 outline-0">
@@ -150,15 +158,14 @@ export default function ExamsPage() {
                                 ✏️ Edit
                               </DropdownMenu.Item>
 
-                              {
-                                role == "admin" && 
+                              {role === "admin" && (
                                 <DropdownMenu.Item
                                   onClick={() => handleDeleteClick(item.id)}
                                   className="px-3 py-2 rounded-md text-red-600 hover:bg-red-50 cursor-pointer outline-0"
                                 >
-                                🗑️ Delete
+                                  🗑️ Delete
                                 </DropdownMenu.Item>
-                              }
+                              )}
 
                               <DropdownMenu.Separator className="h-px bg-gray-100 my-1" />
 
@@ -173,30 +180,29 @@ export default function ExamsPage() {
                             </DropdownMenu.Content>
                           </DropdownMenu.Portal>
                         </DropdownMenu.Root>
-                        :
-                        <button className="cursor-pointer bg-orange-400 hover:bg-orange-600 transition-colors text-white py-1 px-2 rounded" onClick={()=> handleSignIn(item.id)}>Sign in</button>
-                    }
-                  </td>
-                </tr>
-              ))}
+                      ) : (
+                        <button
+                          disabled={isRegistered}
+                          className={`py-1 px-2 rounded text-white transition-colors disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed bg-orange-500 hover:bg-orange-600`}
+                          onClick={() => !isRegistered && handleSignIn(item.id)}
+                        >
+                          {isRegistered ? "Already Signed In" : "Sign In"}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       ) : (
-        <p className="text-gray-500 text-center py-10">
-          You don’t have any exams yet.
-        </p>
+        <p className="text-gray-500 text-center py-10">You don’t have any exams yet.</p>
       )}
 
-
-      <UpdateExamModal open={open} id={selectedId} setOpen={setOpen}/>
-      <ExamSigninDialog open={examDialogOpen} onConfirm={signInExamHandler} setOpen={setExamDialogOpen}/>
-      <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        setOpen={setDeleteDialogOpen}
-        onConfirm={handleConfirmDelete}
-      />
-
+      <UpdateExamModal open={open} id={selectedId} setOpen={setOpen} />
+      <ExamSigninDialog open={examDialogOpen} onConfirm={signInExamHandler} setOpen={setExamDialogOpen} />
+      <DeleteConfirmDialog open={deleteDialogOpen} setOpen={setDeleteDialogOpen} onConfirm={handleConfirmDelete} />
     </>
   );
 }

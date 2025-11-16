@@ -27,7 +27,7 @@ export default function ExamsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("user_exams")
-        .select("id, exam_id, exams(title, start_date, end_date)")
+        .select(`id,exam_id,exams(title,start_date,end_date)`)
         .order("id", { ascending: false });
 
       if (error) throw error;
@@ -74,6 +74,8 @@ export default function ExamsPage() {
       </div>
     );
 
+    console.log("userExams", userExams)
+
   return (
     <>
       <div className="flex items-center justify-between mb-6">
@@ -96,12 +98,12 @@ export default function ExamsPage() {
               {userExams.map((item, index) => (
                 <tr key={item.id} className="border-t">
                   <td className="px-4 py-3">{index + 1}</td>
-                  <td className="px-4 py-3 font-medium">{item.exams.title}</td>
+                  <td className="px-4 py-3 font-medium">{item?.exams?.title}</td>
                   <td className="px-4 py-3 text-gray-400">
-                    {new Date(item.exams.start_date).toLocaleDateString()}
+                    {new Date(item?.exams?.start_date).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3 text-gray-400">
-                    {new Date(item.exams.end_date).toLocaleDateString()}
+                    {new Date(item?.exams?.end_date).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3 text-center">
                     <button
