@@ -53,6 +53,10 @@ export default function ExamsPage() {
     setDeleteDialogOpen(true);
   };
 
+  const handleStartExam = (id:number) =>{
+
+  }
+
   const handleConfirmDelete = () => {
     if (selectedId !== null) {
       deleteHandler(selectedId);
@@ -93,26 +97,51 @@ export default function ExamsPage() {
               </tr>
             </thead>
             <tbody>
-              {userExams.map((item, index) => (
-                <tr key={item.id} className="border-t">
-                  <td className="px-4 py-3">{index + 1}</td>
-                  <td className="px-4 py-3 font-medium">{item?.exams?.title}</td>
-                  <td className="px-4 py-3 text-gray-400">
-                    {new Date(item?.exams?.start_date).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3 text-gray-400">
-                    {new Date(item?.exams?.end_date).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <button
-                      className="px-3 py-2 rounded-md text-red-600 hover:bg-red-50 cursor-pointer outline-0"
-                      onClick={() => handleDeleteClick(item.id)}
-                    >
-                      🗑️ Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {userExams.map((item, index) => {
+                const endDate = new Date(item?.exams?.end_date);
+                const startDate = new Date(item?.exams?.start_date);
+                const today = new Date();
+
+                const isExpired = endDate < today;
+
+                return (
+                  <tr key={item.id} className="border-t">
+                    <td className="px-4 py-3">{index + 1}</td>
+
+                    <td className="px-4 py-3 font-medium">
+                      {item?.exams?.title}
+                    </td>
+
+                    <td className="px-4 py-3 text-gray-400">
+                      {startDate.toLocaleDateString()}
+                    </td>
+
+                    <td className="px-4 py-3 text-gray-400">
+                      {endDate.toLocaleDateString()}
+                    </td>
+
+                    <td className="px-4 py-3 text-center">
+                      {isExpired ? (
+                        <span className="text-red-500 font-semibold">Expired</span>
+                      ) : (
+                        <div>
+                          <button
+                            className="px-2 py-2 rounded-md text-green-600 hover:bg-green-50 cursor-pointer outline-0"
+                            onClick={() => handleStartExam(item.id)}
+                          >
+                            Run
+                          </button>
+
+                          <button className="px-2 py-2 rounded-md text-red-600 hover:bg-red-50 cursor-pointer outline-0" onClick={() => handleDeleteClick(item.id)} >
+                            🗑️ 
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+
             </tbody>
           </table>
         </div>
