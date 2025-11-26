@@ -3,6 +3,7 @@
 import { DeleteConfirmDialog } from "@/components";
 import { supabase } from "@/lib/supabaseClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface Exam {
@@ -19,6 +20,7 @@ interface UserExam {
 
 export default function ExamsPage() {
   const queryClient = useQueryClient();
+  const router = useRouter()
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -54,7 +56,7 @@ export default function ExamsPage() {
   };
 
   const handleStartExam = (id:number) =>{
-
+    router.push(`/dashboard/member/user-exams/${id}`)
   }
 
   const handleConfirmDelete = () => {
@@ -127,7 +129,7 @@ export default function ExamsPage() {
                         <div>
                           <button
                             className="px-2 py-2 rounded-md text-green-600 hover:bg-green-50 cursor-pointer outline-0"
-                            onClick={() => handleStartExam(item.id)}
+                            onClick={() => handleStartExam(item.exam_id)}
                           >
                             Run
                           </button>
