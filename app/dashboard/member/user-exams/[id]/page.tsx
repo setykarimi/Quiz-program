@@ -1,34 +1,47 @@
 "use client";
 
 import { supabase } from "@/lib/supabaseClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
 export default function Page() {
+  const params = useParams();
+  const id = params.id;
 
-    const params = useParams();
-    const id = params.id;
 
-    console.log("id", id)
+  const { data: questions, isLoading: loadingQuestions } = useQuery({
+    queryKey: ["questions"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("questions")
+        .select("*")
+        .order("id");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
 
-    const { data: questions, isLoading: loadingQuestions } = useQuery({
-        queryKey: ["questions"],
-        queryFn: async () => {
-        const { data, error } = await supabase.from("questions").select("*").order("id");
-        if (error) throw error;
-        return data;
-        },
-        enabled: !!id,
-    });
+  const { mutate: updateHanlder } = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("user_exams").update({status: 1}).eq("exam_id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      //   QueryClient.invalidateQueries({ queryKey: ["exams"] });
+      //   setOpen(false);
+    },
+  });
 
-    const handleYes = () => {
-        console.log("Exam started");
-        // router.push("/exam/123")
-    };
+  const handleYes = () => {
+    console.log("Exam started");
+    updateHanlder()
+    // router.push("/exam/123")
+  };
 
-    const handleNo = () => {
-        console.log("Canceled");
-    };
+  const handleNo = () => {
+    console.log("Canceled");
+  };
 
   return (
     <div className="max-w-sm mx-auto p-6 ">
