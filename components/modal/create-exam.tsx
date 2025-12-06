@@ -43,7 +43,6 @@ export function CreateExamModal() {
 
   const onSubmit = (data: FormInputs) => {
     mutation.mutate(data);
-   
   };
 
   return (
@@ -91,7 +90,6 @@ export function CreateExamModal() {
             <TextAreaInput
               label="Description"
               register={register("description")}
-              error={errors.description}
             />
 
             <div className="flex justify-end gap-2 mt-6">

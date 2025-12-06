@@ -40,7 +40,6 @@ export function CreateQuestionModal() {
   });
 
   const onSubmit = (data: FormInputs) => {
-    console.log("data", data)
     mutation.mutate(data);
   };
 

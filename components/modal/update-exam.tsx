@@ -110,9 +110,8 @@ export const UpdateExamModal:FC<Props> = ({ open, setOpen, id })=> {
                 </div>
 
                 <TextAreaInput
-                    label="Description"
-                    register={register("description")}
-                    error={errors.description}
+                  label="Description"
+                  register={register("description")}
                 />
 
                 <div className="flex justify-end gap-2 mt-6">

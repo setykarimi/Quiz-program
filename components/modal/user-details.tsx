@@ -156,8 +156,6 @@ export const UserDetailsModal: FC<Props> = ({ open, setOpen, id }) => {
                     }
                 }) : []}/> : <span>No Exam fround</span>}
                 
-              
-
               <div className="flex justify-end gap-2 mt-2">
                 <button
                   type="button"
