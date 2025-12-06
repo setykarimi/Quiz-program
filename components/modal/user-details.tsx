@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabaseClient";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { Dispatch, FC, SetStateAction, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FormSelect } from "../form/select-box";
 
@@ -23,7 +23,6 @@ export const UserDetailsModal: FC<Props> = ({ open, setOpen, id }) => {
   const queryClient = useQueryClient();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // User's exams
   const { data: userExams, isLoading, isError, error } = useQuery({
     queryKey: ["user_exams", id],
     queryFn: async () => {
@@ -37,23 +36,20 @@ export const UserDetailsModal: FC<Props> = ({ open, setOpen, id }) => {
     enabled: !!id,
   });
 
-    // All exams that are NOT assigned to user yet
-   const { data: exams } = useQuery({
-    queryKey: ["available-exams", id],
-    queryFn: async () => {
-        const assignedIds = userExams?.map((ue: any) => ue.exam_id) || [];
-        const { data, error } = await supabase
-        .from("exams")
-        .select("*")
-        .not("id", "in", `(${assignedIds.join(",")})`);
-        if (error) throw error;
-        return data;
-    },
-    enabled: !!id && !!userExams, // فقط وقتی userExams داریم اجرا شود
-    });
+  const { data: exams, isLoading: examLoading, isError: examError } = useQuery({
+  queryKey: ["available-exams", id],
+  queryFn: async () => {
+      const assignedIds = userExams?.map((ue: any) => ue.exam_id) || [];
+      const { data, error } = await supabase
+      .from("exams")
+      .select("*")
+      .not("id", "in", `(${assignedIds.join(",")})`);
+      if (error) throw error;
+      return data;
+  },
+  enabled: !!id && !!userExams, 
+  });
 
-
-  // Mutation to add exam to user
   const addExamMutation = useMutation({
     mutationFn: async (data: FormInputs) => {
       const { error } = await supabase
@@ -62,8 +58,8 @@ export const UserDetailsModal: FC<Props> = ({ open, setOpen, id }) => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user_exams", id] });
       setDrawerOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["user_exams", id] });
     },
   });
 
@@ -72,6 +68,10 @@ export const UserDetailsModal: FC<Props> = ({ open, setOpen, id }) => {
     addExamMutation.mutate(data);
     reset();
   };
+
+  useEffect(()=> {
+    queryClient.invalidateQueries({ queryKey: ["available-exams", id] });
+  },[drawerOpen])
 
   return (
     <>
@@ -149,12 +149,13 @@ export const UserDetailsModal: FC<Props> = ({ open, setOpen, id }) => {
             </Dialog.Title>
 
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-                <FormSelect register={register("exam_id", { required: true })} options={exams ? exams?.map((exam)=>  {
+              {examLoading  ? <span>Loading ...</span> : !examError && exams?.length ?  <FormSelect register={register("exam_id", { required: true })} options={exams ? exams?.map((exam)=>  {
                     return {
                         label: exam.title,
                         value: exam.id
                     }
-                }) : []}/>
+                }) : []}/> : <span>No Exam fround</span>}
+                
               
 
               <div className="flex justify-end gap-2 mt-2">
@@ -167,8 +168,8 @@ export const UserDetailsModal: FC<Props> = ({ open, setOpen, id }) => {
                 </button>
                 <button
                   type="submit"
-                  disabled={addExamMutation.isPending}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                  disabled={addExamMutation.isPending || examLoading || examError || exams?.length == 0}
+                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition disabled:bg-gray-300 disabled:text-gray-100 disabled:cursor-not-allowed"
                 >
                   {addExamMutation.isPending ? "Adding..." : "Add Exam"}
                 </button>
