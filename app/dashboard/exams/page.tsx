@@ -1,14 +1,14 @@
 "use client";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CreateExamModal, DeleteConfirmDialog, UpdateExamModal } from "@/components";
-import { supabase } from "@/lib/supabaseClient";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
-import { HamburgerMenu } from "iconsax-reactjs";
-import { useState } from "react";
-import { useAuth } from "@/context/auth-context";
 import { ExamSigninDialog } from "@/components/modal/exam-sign-in";
+import { useAuth } from "@/context/auth-context";
+import { supabase } from "@/lib/supabaseClient";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { HamburgerMenu } from "iconsax-reactjs";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function ExamsPage() {
   const queryClient = useQueryClient();
@@ -42,8 +42,9 @@ export default function ExamsPage() {
     },
   });
 
-  const { data: userExams } = useQuery({
-    queryKey: ["user_exams"],
+
+  const { data: userExams, isLoading: userExamLoading } = useQuery({
+    queryKey: ["user_exams", role, user?.id], 
     queryFn: async () => {
       const { data, error } = await supabase
         .from("user_exams")
@@ -53,6 +54,7 @@ export default function ExamsPage() {
       if (error) throw error;
       return data;
     },
+    enabled: !!user?.id && role === "member", // مهم!
   });
 
   const registeredExamIds = userExams?.map((u) => u.exam_id) ?? [];
@@ -93,7 +95,7 @@ export default function ExamsPage() {
     setOpen(true);
   };
 
-  if (isLoading)
+  if (isLoading || userExamLoading)
     return <div className="text-gray-500 text-center my-10 animate-pulse">Loading exams...</div>;
 
   if (isError)
@@ -103,7 +105,7 @@ export default function ExamsPage() {
     <>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold text-gray-800">Exams List</h1>
-        <CreateExamModal />
+        {role !== "member" &&  <CreateExamModal />}
       </div>
 
       {exams?.length ? (
