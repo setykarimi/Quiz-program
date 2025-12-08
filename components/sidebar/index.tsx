@@ -45,16 +45,20 @@ export function Sidebar() {
 
   const routes = routesByRole[role ?? "default"] || [];
 
-  useEffect(() => {
-    handleShowSidebar();
-  }, [pathname]);
+ useEffect(() => {
+  const isMobile = window.innerWidth < 1024;
+  if (isMobile) {
+    handleShowSidebar(false);
+  }
+}, [pathname]);
+
 
 
   return (
     <div className={`bg-white flex-col gap-3 py-4 px-5 ${showSidebar ? "z-20 flex fixed top-0 left-0 h-screen rounded-none w-60" : "lg:flex hidden rounded-xl min-h-[calc(100vh-2rem)]"}`}>
       <div className="flex justify-between items-center mb-4">
         <h2 className="font-bold text-xl ">Quiz Program</h2>
-        <button className="lg:hidden block" onClick={()=> handleShowSidebar()}>
+        <button className="lg:hidden block" onClick={()=> handleShowSidebar(true)}>
           <CloseSquare />
         </button>
       </div>

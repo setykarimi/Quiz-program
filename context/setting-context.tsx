@@ -3,20 +3,22 @@ import { createContext, useContext, useState } from "react";
 
 type SettingContextType = {
     showSidebar: boolean
-    handleShowSidebar: () => void
+    handleShowSidebar:(value: boolean) => void
+
 };
 
 const SettingContext = createContext<SettingContextType>({
     showSidebar: false,
-    handleShowSidebar: () => {}
+    handleShowSidebar: (value: boolean) => {},
 });
 
 export const SettingProvider = ({ children }: { children: React.ReactNode }) => {
     const [showSidebar, setShowSidebar] = useState(false)
 
-    const handleShowSidebar = () => {
-        setShowSidebar(!showSidebar)
+    const handleShowSidebar = (value: boolean) => {
+        setShowSidebar(value)
     }
+
 
     return (
         <SettingContext.Provider value={{ showSidebar, handleShowSidebar }}>
