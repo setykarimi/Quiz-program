@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { CloseSquare, Logout } from "iconsax-reactjs";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export function Sidebar() {
   const { role } = useAuth();
@@ -43,6 +44,11 @@ export function Sidebar() {
   }
 
   const routes = routesByRole[role ?? "default"] || [];
+
+  useEffect(() => {
+    handleShowSidebar();
+  }, [pathname]);
+
 
   return (
     <div className={`bg-white flex-col gap-3 py-4 px-5 ${showSidebar ? "z-20 flex fixed top-0 left-0 h-screen rounded-none w-60" : "lg:flex hidden rounded-xl min-h-[calc(100vh-2rem)]"}`}>
