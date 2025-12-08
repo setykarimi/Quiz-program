@@ -20,7 +20,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
              Welcome, <span className="font-bold">{user?.user_metadata?.display_name}</span>
            </span>
 
-            <button className="lg:hidden block" onClick={()=> handleShowSidebar()}>
+            <button className="lg:hidden block" onClick={()=> handleShowSidebar(true)}>
               <HamburgerMenu></HamburgerMenu>
             </button>
 

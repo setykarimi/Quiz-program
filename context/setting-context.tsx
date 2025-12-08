@@ -9,7 +9,7 @@ type SettingContextType = {
 
 const SettingContext = createContext<SettingContextType>({
     showSidebar: false,
-    handleShowSidebar: (value: boolean) => {},
+    handleShowSidebar: () => {},
 });
 
 export const SettingProvider = ({ children }: { children: React.ReactNode }) => {
