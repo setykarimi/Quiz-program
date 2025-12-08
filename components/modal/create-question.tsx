@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FormInput } from "../form/input";
 import { FormSelect } from "../form/select-box";
+import { useAuth } from "@/context/auth-context";
 
 type FormInputs = {
   title: string;
@@ -18,14 +19,12 @@ type FormInputs = {
 
 export function CreateQuestionModal() {
   const queryClient = useQueryClient();
-  const [open, setOpen] = useState(false); // state کنترل modal
-
+  const [open, setOpen] = useState(false);
   const { handleSubmit, register, formState: { errors }, reset } = useForm<FormInputs>({});
-
 
   const mutation = useMutation({
     mutationFn: async (data: FormInputs) => {
-      const { error } = await supabase.from("questions").insert([data]);
+      const { error } = await supabase.from("questions").insert(data);
       if (error) throw error;
     },
     onSuccess: () => {
