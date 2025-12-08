@@ -20,9 +20,10 @@ export const FormSelect: FC<FormSelectProps> = ({
 }) => {
   return (
     <div className="flex flex-col gap-1">
-      {label && <label className="text-xs text-gray-600">{label}</label>}
+      {label && <label className="text-xs text-gray-600" htmlFor={register.name}>{label}</label>}
       <div className="relative">
         <select
+          id={register.name}
           {...register}
           className={`bg-[#EDF5F4] text-gray-800 px-4 py-3 outline-none rounded-lg text-sm border placeholder:text-[#9EA3A2] appearance-none w-full cursor-pointer
             ${error ? "border-red-700" : "border-transparent"}
@@ -46,7 +47,6 @@ export const FormSelect: FC<FormSelectProps> = ({
           ))}
         </select>
 
-        {/* آیکن فلش */}
         <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
           ▼
         </span>

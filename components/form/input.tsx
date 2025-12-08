@@ -15,8 +15,9 @@ type FormInputProps = {
 export const FormInput: FC<FormInputProps> = ({ label, type = "text", placeholder, register, error, min }) => {
   return (
     <div className="flex flex-col gap-1">
-      {label && <label className="text-xs">{label}</label>}
+      {label && <label className="text-xs" htmlFor={register.name}>{label}</label>}
       <input
+        id={register.name}
         type={type}
         placeholder={placeholder}
         {...register}
