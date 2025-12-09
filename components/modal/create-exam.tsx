@@ -27,7 +27,7 @@ export function CreateExamModal() {
 
   const mutation = useMutation({
     mutationFn: async (data: FormInputs) => {
-      const { error } = await supabase.from("exams").insert([data]);
+      const { error } = await supabase.from("exams").insert(data);
       if (error) throw error;
     },
     onSuccess: () => {
