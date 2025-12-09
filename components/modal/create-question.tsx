@@ -8,7 +8,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FormInput } from "../form/input";
 import { FormSelect } from "../form/select-box";
-import { useAuth } from "@/context/auth-context";
 
 type FormInputs = {
   title: string;
