@@ -6,9 +6,9 @@ type ConfirmDeleteDialogProps = {
   open: boolean;
   setOpen: (value: boolean) => void;
   onConfirm: () => void;
-  desc: string
+  desc?: string
   btnText: string
-  classNames: string
+  classNames?: string
 };
 
 export const ConfirmDialog: FC<ConfirmDeleteDialogProps> = ({ open, setOpen, onConfirm, desc, btnText, classNames}) => {
