@@ -11,28 +11,28 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { showSidebar, handleShowSidebar } = useSetting();
   
   return (
-    <div className="bg-gray-100 min-h-screen p-4 relative">
-      <div className="mx-auto max-w-350 grid gap-4 grid-cols-5">
-        <Sidebar />
-        <div className="lg:col-span-4 col-span-5 h-fit relative">
-          <div className="p-4 rounded-xl bg-white text-sm mb-4 flex lg:justify-start justify-between">
-           <span>
-             Welcome, <span className="font-bold">{user?.user_metadata?.display_name}</span>
-           </span>
+    <div className="grid grid-cols-12 h-screen">
+      <Sidebar />
+      <div className="col-span-12 lg:col-span-9 xl:col-span-10 h-screen flex flex-col ">
+        <div className="p-6 bg-white text-sm  flex lg:justify-start justify-between ">
+          <header>
+            Welcome, <span className="font-bold">{user?.user_metadata?.display_name}</span>
+          </header>
 
-            <button className="lg:hidden block" onClick={()=> handleShowSidebar(true)}>
-              <HamburgerMenu></HamburgerMenu>
-            </button>
+          <button className="lg:hidden block" onClick={()=> handleShowSidebar(true)}>
+            <HamburgerMenu></HamburgerMenu>
+          </button>
 
-          </div>
-          <div className="bg-white p-4 rounded-xl relative z-0">
+        </div>
+        <main className="bg-gray-100/60 lg:rounded-tl-3xl p-4 md:p-6 lg:p-10 flex-1 overflow-y-auto">
+          <div className="xl:max-w-7xl">
             {children}
           </div>
-        </div>
-         {showSidebar && (
-            <div className="absolute inset-0 z-10 bg-black/20 top-0 left-0 w-screen h-screen backdrop-blur-sm pointer-events-none"></div>
-          )}
+        </main>
       </div>
+        {showSidebar && (
+          <div className="absolute inset-0 z-10 bg-black/20 top-0 left-0 w-screen h-screen backdrop-blur-sm pointer-events-none"></div>
+        )}
     </div>
   );
 }
