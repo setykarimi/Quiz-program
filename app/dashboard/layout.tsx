@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <div className="grid grid-cols-12 h-screen">
       <Sidebar />
       <div className="col-span-12 lg:col-span-9 xl:col-span-10 h-screen flex flex-col ">
-        <div className="p-6 bg-white text-sm  flex lg:justify-start justify-between ">
+        <div className="p-6 bg-white text-sm flex lg:justify-start justify-between ">
           <header>
             Welcome, <span className="font-bold">{user?.user_metadata?.display_name}</span>
           </header>
