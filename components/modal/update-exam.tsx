@@ -34,7 +34,6 @@ export const UpdateExamModal:FC<Props> = ({ open, setOpen, id })=> {
     enabled: !!id, 
   });
 
-
   const { handleSubmit, register, control, formState: { errors }, reset } = useForm<FormInputs>({
     defaultValues: { start_date: "", end_date: "" }
   });
