@@ -1,6 +1,5 @@
 "use client";
-import { CreateExamModal, DeleteConfirmDialog, UpdateExamModal } from "@/components";
-import { ExamSigninDialog } from "@/components/modal/exam-sign-in";
+import { ConfirmDialog, CreateExamModal, UpdateExamModal } from "@/components";
 import { useAuth } from "@/context/auth-context";
 import { supabase } from "@/lib/supabaseClient";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -29,7 +28,12 @@ export default function ExamsPage() {
     setDeleteDialogOpen(false);
   };
 
-  const { data: exams, isLoading, isError, error } = useQuery({
+  const {
+    data: exams,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["exams"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -42,9 +46,8 @@ export default function ExamsPage() {
     },
   });
 
-
   const { data: userExams, isLoading: userExamLoading } = useQuery({
-    queryKey: ["user_exams", role, user?.id], 
+    queryKey: ["user_exams", role, user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("user_exams")
@@ -96,16 +99,24 @@ export default function ExamsPage() {
   };
 
   if (isLoading || userExamLoading)
-    return <div className="text-gray-500 text-center my-10 animate-pulse">Loading exams...</div>;
+    return (
+      <div className="text-gray-500 text-center my-10 animate-pulse">
+        Loading exams...
+      </div>
+    );
 
   if (isError)
-    return <div className="text-red-500 text-center my-10">Error loading exams: {error.message}</div>;
+    return (
+      <div className="text-red-500 text-center my-10">
+        Error loading exams: {error.message}
+      </div>
+    );
 
   return (
     <>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold text-gray-800">Exams List</h1>
-        {role !== "member" &&  <CreateExamModal />}
+        {role !== "member" && <CreateExamModal />}
       </div>
 
       {exams?.length ? (
@@ -199,12 +210,28 @@ export default function ExamsPage() {
           </table>
         </div>
       ) : (
-        <p className="text-gray-500 text-center py-10">You don’t have any exams yet.</p>
+        <p className="text-gray-500 text-center py-10">
+          You don’t have any exams yet.
+        </p>
       )}
 
       <UpdateExamModal open={open} id={selectedId} setOpen={setOpen} />
-      <ExamSigninDialog open={examDialogOpen} onConfirm={signInExamHandler} setOpen={setExamDialogOpen} />
-      <DeleteConfirmDialog open={deleteDialogOpen} setOpen={setDeleteDialogOpen} onConfirm={handleConfirmDelete} />
+      <ConfirmDialog
+        open={examDialogOpen}
+        onConfirm={signInExamHandler}
+        setOpen={setExamDialogOpen}
+        btnText="Sign in"
+        classNames="bg-green-500 hover:bg-green-600"
+        desc="This exam will add to your exams after submit."
+      />
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        setOpen={setDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+        desc="This action cannot be undone. Do you really want to delete this item?"
+        btnText="Delete"
+        classNames="bg-red-600 hover:bg-red-700"
+      />
     </>
   );
 }

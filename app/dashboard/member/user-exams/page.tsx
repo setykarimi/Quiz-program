@@ -1,8 +1,8 @@
 "use client";
 
-import { DeleteConfirmDialog } from "@/components";
+import { ConfirmDialog } from "@/components";
 import { supabase } from "@/lib/supabaseClient";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -20,11 +20,16 @@ interface UserExam {
 
 export default function ExamsPage() {
   const queryClient = useQueryClient();
-  const router = useRouter()
+  const router = useRouter();
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const { data: userExams, isLoading, isError, error } = useQuery<UserExam[]>({
+  const {
+    data: userExams,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<UserExam[]>({
     queryKey: ["user_exams"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -33,7 +38,7 @@ export default function ExamsPage() {
         .order("id", { ascending: false });
 
       if (error) throw error;
-      return data as any
+      return data as any;
     },
   });
 
@@ -55,9 +60,9 @@ export default function ExamsPage() {
     setDeleteDialogOpen(true);
   };
 
-  const handleStartExam = (id:number) =>{
-    router.push(`/dashboard/member/user-exams/${id}`)
-  }
+  const handleStartExam = (id: number) => {
+    router.push(`/dashboard/member/user-exams/${id}`);
+  };
 
   const handleConfirmDelete = () => {
     if (selectedId !== null) {
@@ -123,9 +128,11 @@ export default function ExamsPage() {
                     </td>
 
                     <td className="px-4 py-3 text-center">
-                      {isExpired ? (
-                        <span className="text-red-500 font-semibold">Expired</span>
-                      ) : (
+                      {/* {isExpired ? (
+                        <span className="text-red-500 font-semibold">
+                          Expired
+                        </span>
+                      ) : ( */}
                         <div>
                           <button
                             className="px-2 py-2 rounded-md text-green-600 hover:bg-green-50 cursor-pointer outline-0"
@@ -134,16 +141,18 @@ export default function ExamsPage() {
                             Run
                           </button>
 
-                          <button className="px-2 py-2 rounded-md text-red-600 hover:bg-red-50 cursor-pointer outline-0" onClick={() => handleDeleteClick(item.id)} >
-                            🗑️ 
+                          <button
+                            className="px-2 py-2 rounded-md text-red-600 hover:bg-red-50 cursor-pointer outline-0"
+                            onClick={() => handleDeleteClick(item.id)}
+                          >
+                            🗑️
                           </button>
                         </div>
-                      )}
+                      {/* )} */}
                     </td>
                   </tr>
                 );
               })}
-
             </tbody>
           </table>
         </div>
@@ -154,10 +163,13 @@ export default function ExamsPage() {
       )}
 
       {/* Confirm Dialog */}
-      <DeleteConfirmDialog
+      <ConfirmDialog
         open={deleteDialogOpen}
         setOpen={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
+        desc="This action cannot be undone. Do you really want to delete this item?"
+        btnText="Delete"
+        classNames="bg-red-600 hover:bg-red-700"
       />
     </>
   );

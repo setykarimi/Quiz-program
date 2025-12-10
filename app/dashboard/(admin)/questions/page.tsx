@@ -1,5 +1,5 @@
 "use client";
-import { CreateQuestionModal, DeleteConfirmDialog, UpdateQuestionModal } from "@/components";
+import { ConfirmDialog, CreateQuestionModal, UpdateQuestionModal } from "@/components";
 import { supabase } from "@/lib/supabaseClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { HamburgerMenu } from "iconsax-reactjs";
@@ -145,10 +145,13 @@ export default function QuestionsPage() {
       )}
 
       <UpdateQuestionModal open={open} id={selectedId} setOpen={setOpen}/>
-      <DeleteConfirmDialog
+      <ConfirmDialog
         open={deleteDialogOpen}
         setOpen={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
+        desc="This action cannot be undone. Do you really want to delete this item?"
+        btnText="Delete"
+        classNames="bg-red-600 hover:bg-red-700"
       />
     </>
   );
