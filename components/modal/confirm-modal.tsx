@@ -2,13 +2,16 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { FC } from "react";
 
-type ExamSigninDialogProps = {
+type ConfirmDeleteDialogProps = {
   open: boolean;
   setOpen: (value: boolean) => void;
   onConfirm: () => void;
+  desc: string
+  btnText: string
+  classNames: string
 };
 
-export const ExamSigninDialog: FC<ExamSigninDialogProps> = ({ open, setOpen, onConfirm }) => {
+export const ConfirmDialog: FC<ConfirmDeleteDialogProps> = ({ open, setOpen, onConfirm, desc, btnText, classNames}) => {
   return (
     <AlertDialog.Root open={open} onOpenChange={setOpen}>
       <AlertDialog.Portal>
@@ -18,20 +21,20 @@ export const ExamSigninDialog: FC<ExamSigninDialogProps> = ({ open, setOpen, onC
             Are you sure?
           </AlertDialog.Title>
           <AlertDialog.Description className="mt-2 text-gray-600 text-sm">
-            This exam will add to your exams after submit.
+            {desc}
           </AlertDialog.Description>
           <div className="mt-6 flex justify-end gap-2">
             <AlertDialog.Cancel asChild>
-              <button className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 transition border-0 cursor-pointer">
+              <button className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 transition border-0 outline-0">
                 Cancel
               </button>
             </AlertDialog.Cancel>
             <AlertDialog.Action asChild>
               <button
                 onClick={onConfirm}
-                className="px-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition cursor-pointer"
+                className={`px-4 py-2 rounded-md  text-white transition ${classNames}`}
               >
-                Sign in
+                {btnText}
               </button>
             </AlertDialog.Action>
           </div>
