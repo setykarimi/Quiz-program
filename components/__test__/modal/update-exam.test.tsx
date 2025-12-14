@@ -3,15 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-// اصلاح mock supabase
 let updateMockFn;
 
 jest.mock("@/lib/supabaseClient", () => ({
   supabase: {
     from: jest.fn(() => ({
-      update: jest.fn((data) => {
+      update: jest.fn(() => {
         updateMockFn = jest.fn().mockResolvedValue({ error: null });
-        return { eq: updateMockFn }; // ساختار درست chain
+        return { eq: updateMockFn };
       }),
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
@@ -38,7 +37,7 @@ jest.mock("@tanstack/react-query", () => ({
 
 
 
-describe("update exam modal", () => {
+describe("update exam modal", () => { 
   
   test("show loading state", () => {
     (useQuery as jest.Mock).mockReturnValue({ data: null, isLoading: true, isError: false });
