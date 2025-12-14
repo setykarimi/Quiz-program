@@ -85,13 +85,9 @@ export default function QuestionsPage() {
                 >
                   <td className="px-4 py-3">{index + 1}</td>
                   <td className="px-4 py-3 font-medium">{item.title}</td>
-                  <td className="px-4 py-3 text-gray-500 truncate max-w-[300px]">
-                    {item.type || "—"}
-                  </td>
+                  <td className="px-4 py-3 text-gray-500 truncate max-w-[300px]">{item.type || "—"}</td>
                   <td className="px-4 py-3 text-gray-400"> {item.section_id} </td>
                   <td className="px-4 py-3 text-gray-400"> {item.answer} </td>
-                 
-                  
                   <td className="px-4 py-3 text-center">
                     <DropdownMenu.Root>
                       <DropdownMenu.Trigger asChild>
