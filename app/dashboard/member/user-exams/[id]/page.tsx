@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/auth-context";
 import { supabase } from "@/lib/supabaseClient";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
 export default function Page() {
@@ -12,39 +12,38 @@ export default function Page() {
   const {user} = useAuth()
 
   const { mutate: getQuestions, data: questionsData } = useMutation({
-      mutationFn: async () => {
-          const { data, error } = await supabase
-          .rpc('get_user_exam_questions', {
-              exam_id: id,
-              user_uuid: user?.id
-          });
+    mutationFn: async () => {
+        const { data, error } = await supabase
+        .rpc('get_user_exam_questions', {
+            exam_id: id,
+            user_uuid: user?.id
+        });
 
-          if (error) throw error;
-          return data; // اینجا دیتا رو برگردون
-      },
-      onSuccess: (data) => {
-          console.log("سوالات دریافت شد:", data);
-      },
+        if (error) throw error;
+        return data;
+    },
+    onSuccess: (data) => {
+        console.log("سوالات دریافت شد:", data);
+    },
   });
 
   const { mutate: updateHanlder } = useMutation({
-      mutationFn: async () => {
-        const { error } = await supabase.from("user_exams").update({ status: 1 }).eq("exam_id", id).eq("user_id", user?.id);
+    mutationFn: async () => {
+      const { error } = await supabase.from("user_exams").update({ status: 1 }).eq("exam_id", id).eq("user_id", user?.id);
 
-        if (error) throw error;
-      },
-      onSuccess: () => {
-      },
+      if (error) throw error;
+    },
+    onSuccess: () => {
+    },
   });
 
   const handleYes = async () => {
-      try {
-          // اول آپدیت رو انجام بده، بعد سوالات رو بگیر
-          await updateHanlder();
-          getQuestions();
-      } catch (error) {
-          console.error("خطا:", error);
-      }
+    try {
+      await updateHanlder();
+      getQuestions();
+    } catch (error) {
+      console.error("خطا:", error);
+    }
   };
 
   const handleNo = () => {
