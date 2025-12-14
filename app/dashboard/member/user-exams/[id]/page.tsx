@@ -23,7 +23,7 @@ export default function Page() {
         return data;
     },
     onSuccess: (data) => {
-        console.log("سوالات دریافت شد:", data);
+      return data
     },
   });
 
