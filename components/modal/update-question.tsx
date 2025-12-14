@@ -39,7 +39,7 @@ export const UpdateQuestionModal:FC<Props> = ({ open, setOpen, id }) => {
 
   const mutation = useMutation({
     mutationFn: async (data: FormInputs) => {
-      const { error } = await supabase.from("questions").update([data]).eq("id", id);
+      const { error } = await supabase.from("questions").update(data).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
