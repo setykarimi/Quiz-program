@@ -28,16 +28,16 @@ export default function AdminsTable() {
         <table className="min-w-full bg-white text-sm text-gray-700">
           <thead className="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
             <tr>
-              <th className="px-4 py-3 text-left">#</th>
-              <th className="px-4 py-3 text-left">Name</th>
-              <th className="px-4 py-3 text-left">Email</th>
-              <th className="px-4 py-3 text-left">Role</th>
-              <th className="px-4 py-3 text-left"></th>
+              <th className="px-4 py-5 text-[13px] text-left text-gray-400 font-semibold">#</th>
+              <th className="px-4 py-5 text-[13px] text-left text-gray-400 font-semibold">Name</th>
+              <th className="px-4 py-5 text-[13px] text-left text-gray-400 font-semibold">Email</th>
+              <th className="px-4 py-5 text-[13px] text-left text-gray-400 font-semibold">Role</th>
+              <th className="px-4 py-5 text-[13px] text-left text-gray-400 font-semibold"></th>
             </tr>
           </thead>
           <tbody>
             {users?.map((user: any, index: number) => (
-              <tr key={user.id} className="border-t">
+              <tr key={user.id} className="border-t border-t-gray-300">
                 <td className="px-4 py-3">{index + 1}</td>
                 <td className="px-4 py-3 font-medium">{user.user_metadata.display_name}</td>
                 <td className="px-4 py-3">{user.email}</td>

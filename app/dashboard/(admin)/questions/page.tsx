@@ -69,12 +69,12 @@ export default function QuestionsPage() {
           <table className="min-w-full bg-white text-sm text-gray-700">
             <thead className="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
               <tr>
-                <th className="px-4 py-3 text-left">#</th>
-                <th className="px-4 py-3 text-left">Title</th>
-                <th className="px-4 py-3 text-left">Type</th>
-                <th className="px-4 py-3 text-left">Section</th>
-                <th className="px-4 py-3 text-left">Answer</th>
-                <th className="px-4 py-3 text-center">Actions</th>
+                <th className="px-4 py-5 text-[13px] text-left text-gray-400 font-semibold">#</th>
+                <th className="px-4 py-5 text-[13px] text-left text-gray-400 font-semibold">Title</th>
+                <th className="px-4 py-5 text-[13px] text-left text-gray-400 font-semibold">Type</th>
+                <th className="px-4 py-5 text-[13px] text-left text-gray-400 font-semibold">Section</th>
+                <th className="px-4 py-5 text-[13px] text-left text-gray-400 font-semibold">Answer</th>
+                <th className="px-4 py-5 text-[13px] text-left text-gray-400 font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
