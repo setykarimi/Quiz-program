@@ -128,11 +128,11 @@ export default function ExamsPage() {
                     </td>
 
                     <td className="px-4 py-3 text-center">
-                      {/* {isExpired ? (
+                      {isExpired ? (
                         <span className="text-red-500 font-semibold">
                           Expired
                         </span>
-                      ) : ( */}
+                      ) : (
                         <div>
                           <button
                             className="px-2 py-2 rounded-md text-green-600 hover:bg-green-50 cursor-pointer outline-0"
@@ -148,7 +148,7 @@ export default function ExamsPage() {
                             🗑️
                           </button>
                         </div>
-                      {/* )} */}
+                      )}
                     </td>
                   </tr>
                 );
