@@ -1,10 +1,10 @@
 "use client";
 
-import { question_types, section_types } from "@/data";
+import { question_options, section_options } from "@/data";
 import { supabase } from "@/lib/supabaseClient";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FormInput } from "../form/input";
 import { FormSelect } from "../form/select-box";
@@ -87,9 +87,9 @@ export const UpdateQuestionModal:FC<Props> = ({ open, setOpen, id }) => {
                   error={errors.title}
                 />
                 
-                <FormSelect options={question_types} register={register("type")} label="Question Type" />
+                <FormSelect options={question_options} register={register("type")} label="Question Type" />
 
-                <FormSelect options={section_types} register={register("section_id")} label="Section" />
+                <FormSelect options={section_options} register={register("section_id")} label="Section" />
                 
                 <FormInput
                   label="Answer"

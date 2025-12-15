@@ -1,40 +1,63 @@
 "use client";
 
+import { FormCheckbox } from "@/components/form/checkbox";
 import { useAuth } from "@/context/auth-context";
+import { IQuestion } from "@/data";
 import { supabase } from "@/lib/supabaseClient";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 
 export default function Page() {
-
+                                                    
   const params = useParams();
   const id = params.id;
-  const {user} = useAuth()
+  const { user } = useAuth();
+  const { register } = useForm();
 
-  const { mutate: getQuestions, data: questionsData } = useMutation({
+  const { data: examStatus, isLoading: loadingStatus, isError: examStatusError } = useQuery({
+    queryKey: ["user-exam-status"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_exams")
+        .select("status")
+        .eq("exam_id", id)
+        .eq("user_id", user?.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user
+  });
+
+  const { mutate: getQuestions, data: questionsData, isPending, isError } = useMutation({
     mutationFn: async () => {
-        const { data, error } = await supabase
-        .rpc('get_user_exam_questions', {
-            exam_id: id,
-            user_uuid: user?.id
-        });
+      const { data, error } = await supabase.rpc("get_user_exam_questions", {
+  p_exam_id: id,
+  p_user_uuid: user?.id,
+});
 
-        if (error) throw error;
-        return data;
+      if (error) throw error;
+      return data;
     },
     onSuccess: (data) => {
-      return data
+      return data;
     },
   });
 
   const { mutate: updateHanlder } = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("user_exams").update({ status: 1 }).eq("exam_id", id).eq("user_id", user?.id);
+      const { error } = await supabase
+        .from("user_exams")
+        .update({ status: 1 })
+        .eq("exam_id", id)
+        .eq("user_id", user?.id);
 
       if (error) throw error;
     },
-    onSuccess: () => {
-    },
+    onSuccess: () => {},
   });
 
   const handleYes = async () => {
@@ -50,7 +73,38 @@ export default function Page() {
     console.log("Canceled");
   };
 
-  return (
+  useEffect(()=> {
+    if(examStatus?.status == 1) getQuestions()
+  },[user, examStatus])
+
+  if (isPending || loadingStatus) {
+    return <div>Loading ...</div>;
+  }
+
+  if (isError || examStatusError) {
+    return <div>Error ...</div>;
+  }
+
+  if (examStatus?.status == 1 && questionsData) {
+    return (
+      <form>
+        {questionsData.map((question: IQuestion) => (
+          <FormCheckbox
+            key={question.id}
+            label={question.title}
+            register={register(`${question.id}`)}
+          />
+        ))}
+
+        <button type="submit"
+          // disabled={loading}
+          className="bg-orange-600 text-white px-4 py-3 rounded-lg disabled:bg-gray-400 text-sm">Submit form</button>
+      </form>
+    );
+  }
+
+  if(examStatus?.status == 0) {
+    return (
     <div className="max-w-sm mx-auto p-6 ">
       <h2 className="text-lg font-bold mb-2 text-gray-800">
         Are you sure you want to start the exam?
@@ -79,4 +133,7 @@ export default function Page() {
       </div>
     </div>
   );
+  }
+
+  
 }
