@@ -1,4 +1,4 @@
-export const question_types = [
+export const question_options = [
     { label: "first", value: "first" },
     { label: "second", value: "second" },
     { label: "third", value: "third" },

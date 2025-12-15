@@ -1,4 +1,4 @@
-export const section_types = [
+export const section_options = [
     { label: "Group 1", value: 1 },
     { label: "Group 2", value: 2 },
     { label: "Group 3", value: 3 },
