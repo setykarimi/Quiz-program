@@ -35,9 +35,9 @@ export default function Page() {
   const { mutate: getQuestions, data: questionsData, isPending, isError } = useMutation({
     mutationFn: async () => {
       const { data, error } = await supabase.rpc("get_user_exam_questions", {
-  p_exam_id: id,
-  p_user_uuid: user?.id,
-});
+        p_exam_id: id,
+        p_user_uuid: user?.id,
+      });
 
       if (error) throw error;
       return data;
