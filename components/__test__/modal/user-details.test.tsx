@@ -11,7 +11,6 @@ jest.mock("next/navigation", () => ({
   }),
 }));
 
-// ۱. شبیه‌سازی Supabase
 jest.mock("@/lib/supabaseClient", () => ({
   supabase: {
     from: jest.fn(() => ({
