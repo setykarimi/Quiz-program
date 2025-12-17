@@ -16,7 +16,7 @@ export const FormCheckbox: FC<FormCheckboxProps> = ({ label, register, error }) 
         <input
           type="checkbox"
           {...register}
-          className={`w-4 h-4 rounded border border-gray-400 focus:ring-2 focus:ring-blue-500 ${
+          className={`w-4 h-4 rounded border border-gray-400 ${
             error ? "border-red-700" : ""
           }`}
         />

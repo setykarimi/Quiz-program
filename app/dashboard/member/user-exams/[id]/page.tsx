@@ -4,6 +4,7 @@ import { FormCheckbox } from "@/components/form/checkbox";
 import { useAuth } from "@/context/auth-context";
 import { IQuestion } from "@/data";
 import { supabase } from "@/lib/supabaseClient";
+import { getQuestionType } from "@/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
@@ -87,17 +88,15 @@ export default function Page() {
   if (examStatus?.status == 1 && questionsData) {
     return (
       <form>
-        {questionsData.map((question: IQuestion) => (
-          <FormCheckbox
-            key={question.id}
-            label={question.title}
-            register={register(`${question.id}`)}
-          />
-        ))}
+        <div className="flex flex-col gap-4">
+          {questionsData.map((question: IQuestion) => (
+            <div>{getQuestionType(question) }</div>
+          ))}
+        </div>
 
         <button type="submit"
           // disabled={loading}
-          className="bg-orange-600 text-white px-4 py-3 rounded-lg disabled:bg-gray-400 text-sm mt-4">Submit form</button>
+          className="bg-orange-600 text-white px-4 py-2 rounded-lg disabled:bg-gray-400 text-sm mt-4">Submit form</button>
       </form>
     );
   }
