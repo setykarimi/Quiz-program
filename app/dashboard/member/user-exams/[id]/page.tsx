@@ -14,7 +14,7 @@ export default function Page() {
   const params = useParams();
   const id = params.id;
   const { user } = useAuth();
-  const { register } = useForm();
+  const { register, handleSubmit } = useForm();
 
   const { data: examStatus, isLoading: loadingStatus, isError: examStatusError } = useQuery({
     queryKey: ["user-exam-status"],
@@ -72,6 +72,10 @@ export default function Page() {
     console.log("Canceled");
   };
 
+  const onSubmit = (data: any) => {
+    console.log("data", data)
+  }
+
   useEffect(()=> {
     if(examStatus?.status == 1) getQuestions()
   },[user, examStatus])
@@ -88,10 +92,10 @@ export default function Page() {
     return (
      <div className="bg-white p-6 rounded-xl">
       <h2>{}</h2>
-       <form>
+       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-4">
           {questionsData.map((question: IQuestion) => (
-            <div key={question.id}>{getQuestionType(question, register) }</div>
+            <div key={question.id} className="not-last:border-b border-b-gray-200 pb-4 ">{getQuestionType(question, register) }</div>
           ))}
         </div>
 
