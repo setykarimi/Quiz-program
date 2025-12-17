@@ -34,19 +34,18 @@ export default function Page() {
 
   const { mutate: getQuestions, data: questionsData, isPending, isError } = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.rpc("get_user_exam_questions", {
-        p_exam_id: id,
-        p_user_uuid: user?.id,
-      });
+      const { data, error } = await supabase.rpc("get_user_exam_questions",
+        {
+          p_exam_id: Number(id),  
+          p_user_uuid: user!.id,
+        }
+      );
 
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
-      return data;
-    },
   });
-
+  
   const { mutate: updateHanlder } = useMutation({
     mutationFn: async () => {
       const { error } = await supabase
@@ -62,7 +61,7 @@ export default function Page() {
 
   const handleYes = async () => {
     try {
-      await updateHanlder();
+      updateHanlder();
       getQuestions();
     } catch (error) {
       console.error("خطا:", error);
@@ -98,7 +97,7 @@ export default function Page() {
 
         <button type="submit"
           // disabled={loading}
-          className="bg-orange-600 text-white px-4 py-3 rounded-lg disabled:bg-gray-400 text-sm">Submit form</button>
+          className="bg-orange-600 text-white px-4 py-3 rounded-lg disabled:bg-gray-400 text-sm mt-4">Submit form</button>
       </form>
     );
   }
@@ -135,5 +134,4 @@ export default function Page() {
   );
   }
 
-  
 }
