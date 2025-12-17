@@ -137,7 +137,7 @@ export default function ExamsPage() {
                 const isRegistered = registeredExamIds.includes(item.id);
 
                 return (
-                  <tr key={index} className="border-t transition">
+                  <tr key={index} className="transition">
                     <td className="px-4 py-3">{index + 1}</td>
                     <td className="px-4 py-3 font-medium">{item.title}</td>
                     <td className="px-4 py-3 text-gray-500 truncate max-w-[300px]">

@@ -113,7 +113,7 @@ export default function ExamsPage() {
                 const isExpired = endDate < today;
 
                 return (
-                  <tr key={item.id} className="border-t">
+                  <tr key={item.id}>
                     <td className="px-4 py-3">{index + 1}</td>
 
                     <td className="px-4 py-3 font-medium">

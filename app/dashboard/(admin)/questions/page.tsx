@@ -81,7 +81,7 @@ export default function QuestionsPage() {
               {questions.map((item, index) => (
                 <tr
                   key={item.id}
-                  className="border-t transition"
+                  className="transition"
                 >
                   <td className="px-4 py-3">{index + 1}</td>
                   <td className="px-4 py-3 font-medium">{item.title}</td>

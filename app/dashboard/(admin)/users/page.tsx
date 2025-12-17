@@ -37,7 +37,7 @@ export default function AdminsTable() {
           </thead>
           <tbody>
             {users?.map((user: any, index: number) => (
-              <tr key={user.id} className="border-t border-t-gray-300">
+              <tr key={user.id}>
                 <td className="px-4 py-3">{index + 1}</td>
                 <td className="px-4 py-3 font-medium">{user.user_metadata.display_name}</td>
                 <td className="px-4 py-3">{user.email}</td>
