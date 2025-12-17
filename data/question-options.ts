@@ -1,7 +1,7 @@
 export const question_options = [
-    { label: "first", value: "first" },
-    { label: "second", value: "second" },
-    { label: "third", value: "third" },
-    { label: "fourth", value: "fourth" },
-    { label: "fifth", value: "fifth" },
+    { label: "checkbox", value: "checkbox" },
+    { label: "number", value: "number" },
+    { label: "radio", value: "radio" },
+    { label: "text", value: "text" },
+    { label: "select", value: "select" },
 ]
