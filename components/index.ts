@@ -2,6 +2,7 @@ export * from './form/input'
 export * from './form/text-area'
 export * from './form/select-box'
 export * from './form/checkbox'
+export * from './form/radio-group'
 
 export * from './sidebar'
 
