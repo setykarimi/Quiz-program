@@ -26,3 +26,15 @@ body {
 html:lang(fa) {
   direction: rtl;
 }
+
+table tr td:not(:first-child) {
+  border-left: 1px solid oklch(92.8% 0.006 264.531);
+}
+
+table tbody tr:first-child{
+  border-top:  2px solid oklch(87.2% 0.01 258.338);
+}
+
+table tbody tr:not(:first-child){
+  border-top:  1px solid oklch(92.8% 0.006 264.531);
+}
