@@ -1,20 +1,21 @@
 import { IQuestion } from "@/data";
 import { FieldValues, UseFormRegister } from "react-hook-form";
-import { FormCheckbox, FormInput } from '@/components/index'
+import { FormCheckbox, FormInput, FormRadioGroup, FormSelect } from '@/components/index'
 
 export function getQuestionType(question: IQuestion, register:UseFormRegister<FieldValues>) {
-  switch (question.type) {
+  const {title, id, type} = question
+  switch (type) {
     case "checkbox":
-      return <FormCheckbox label={question.title} register={register(question.title)}  />
+      return <FormCheckbox label={title} register={register(question.title)}  />
       
     case "radio":
-      return "radio";
+      return <FormRadioGroup label={title} options={[{label: "label", value: 'value'},{label: "label 2", value: 'value 2'}]} register={register(`${id}-${title}`)}/>;
     case "select":
-      return "select";
+      return <FormSelect options={[]} register={register(`${id}-${title}`)} label={title}/>;
     case "text":
-      return <FormInput label={question.title} register={register(question.title)} />
+      return <FormInput label={title} register={register(`${id}-${title}`)} />
     case "number":
-      return <FormInput label={question.title} register={register(question.title)} type="number"/>
+      return <FormInput label={title} register={register(`${id}-${title}`)} type="number"/>
     default:
       return "unknown";
   }
