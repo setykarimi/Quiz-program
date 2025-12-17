@@ -14,6 +14,7 @@ interface Exam {
 
 interface UserExam {
   id: number;
+  status: number
   exam_id: number;
   exams: Exam;
 }
@@ -34,7 +35,7 @@ export default function ExamsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("user_exams")
-        .select(`id,exam_id,exams(title,start_date,end_date)`)
+        .select(`id,exam_id,status,exams(title,start_date,end_date)`)
         .order("id", { ascending: false });
 
       if (error) throw error;
@@ -134,12 +135,19 @@ export default function ExamsPage() {
                         </span>
                       ) : (
                         <div>
-                          <button
+                         {
+                          item.status == 0 ?  <button
                             className="px-2 py-2 rounded-md text-green-600 hover:bg-green-50 cursor-pointer outline-0"
                             onClick={() => handleStartExam(item.exam_id)}
                           >
                             Run
-                          </button>
+                          </button> : item.status == 1 ? <button
+                            className="px-2 py-2 rounded-md text-green-600 hover:bg-green-50 cursor-pointer outline-0"
+                            onClick={() => handleStartExam(item.exam_id)}
+                          >
+                            Resume
+                          </button> : <></>
+                         }
 
                           <button
                             className="px-2 py-2 rounded-md text-red-600 hover:bg-red-50 cursor-pointer outline-0"
