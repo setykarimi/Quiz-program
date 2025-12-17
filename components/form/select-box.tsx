@@ -20,7 +20,7 @@ export const FormSelect: FC<FormSelectProps> = ({
 }) => {
   return (
     <div className="flex flex-col gap-1">
-      {label && <label className="text-xs text-gray-600" htmlFor={register.name}>{label}</label>}
+      {label && <label className="text-sm text-gray-600" htmlFor={register.name}>{label}</label>}
       <div className="relative">
         <select
           id={register.name}

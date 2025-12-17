@@ -12,7 +12,7 @@ type Props = {
 export const TextAreaInput :FC<Props> = ({ label, placeholder, register }) => {
   return (
     <div className="flex flex-col gap-1">
-      {label && <label className="text-xs" htmlFor={register.name}>{label}</label>}
+      {label && <label className="text-sm" htmlFor={register.name}>{label}</label>}
       <textarea
         id={register.name}
         placeholder={placeholder}
