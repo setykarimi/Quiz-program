@@ -4,19 +4,23 @@ import { useAuth } from "@/context/auth-context";
 import { IQuestion } from "@/data";
 import { supabase } from "@/lib/supabaseClient";
 import { getQuestionType } from "@/utils";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Page() {
-                                                    
+  const queryClient = useQueryClient();
   const params = useParams();
   const id = params.id;
   const { user } = useAuth();
   const { register, handleSubmit } = useForm();
 
-  const { data: exam, isLoading: loadingExam, isError: examError } = useQuery<any>({
+  const {
+    data: exam,
+    isLoading: loadingExam,
+    isError: examError,
+  } = useQuery<any>({
     queryKey: ["user-exam-status", id, user?.id],
     queryFn: async () => {
       if (!user) return null;
@@ -31,40 +35,60 @@ export default function Page() {
       if (error) throw error;
       return data;
     },
-    enabled: !!user && !!id
+    enabled: !!user && !!id,
   });
 
-
-  const { mutate: getQuestions, data: questionsData, isPending, isError } = useMutation({
+  const {
+    mutate: getQuestions,
+    data: questionsData,
+    isPending,
+    isError,
+  } = useMutation({
+    mutationKey: ["user-exam-questions"],
     mutationFn: async () => {
-      const { data, error } = await supabase.rpc("get_user_exam_questions",
-        {
-          p_exam_id: Number(id),  
-          p_user_uuid: user!.id,
-        }
-      );
+      const { data, error } = await supabase.rpc("get_user_exam_questions", {
+        p_exam_id: Number(id),
+        p_user_uuid: user!.id,
+      });
 
       if (error) throw error;
       return data;
     },
   });
-  
-  const { mutate: updateHanlder } = useMutation({
-    mutationFn: async () => {
+
+  const { mutate: updateHanlder, isPending: updateLoading } = useMutation({
+    mutationFn: async (status: number) => {
       const { error } = await supabase
         .from("user_exams")
-        .update({ status: 1 })
+        .update({ status: status })
         .eq("exam_id", id)
         .eq("user_id", user?.id);
 
       if (error) throw error;
     },
-    onSuccess: () => {},
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-exam-questions"] });
+    },
   });
+
+  const { mutate: insertUserAnswers, isPending: insertingAnswersLoading } =
+    useMutation({
+      mutationFn: async (data: {
+        user_exam_id: number;
+        question_id: number;
+        answer: unknown;
+        user_id: string
+      }[]) => {
+        const { error } = await supabase.from("user_answers").insert(data);
+
+        if (error) throw error;
+      },
+      onSuccess: () => {},
+    });
 
   const handleYes = async () => {
     try {
-      updateHanlder();
+      updateHanlder(1);
       getQuestions();
     } catch (error) {
       console.error("خطا:", error);
@@ -76,12 +100,22 @@ export default function Page() {
   };
 
   const onSubmit = (data: any) => {
-    console.log("data", data)
-  }
+    const userData = Object.entries(data).map(([key, value]) => {
+      return {
+        question_id: +key,
+        answer: value,
+        user_exam_id: +id!!,
+        user_id: user.id
+      };
+    });
 
-  useEffect(()=> {
-    if(exam?.status == 1) getQuestions()
-  },[user, exam])
+    insertUserAnswers(userData)
+    updateHanlder(2);
+  };
+
+  useEffect(() => {
+    if (exam?.status == 1) getQuestions();
+  }, [user, exam]);
 
   if (isPending || loadingExam) {
     return <div>Loading ...</div>;
@@ -93,53 +127,63 @@ export default function Page() {
 
   if (exam?.status == 1 && questionsData) {
     return (
-     <div className="bg-white p-6 rounded-xl">
-      <h2 className="font-bold mb-4 border-b border-b-gray-200 pb-4 text-lg">{exam?.exams?.title}</h2>
-       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex flex-col gap-4">
-          {questionsData.map((question: IQuestion) => (
-            <div key={question.id} className="not-last:border-b border-b-gray-200 pb-4 ">{getQuestionType(question, register) }</div>
-          ))}
-        </div>
+      <div className="bg-white p-6 rounded-xl">
+        <h2 className="font-bold mb-4 border-b border-b-gray-200 pb-4 text-lg">
+          {exam?.exams?.title}
+        </h2>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex flex-col gap-4">
+            {questionsData.map((question: IQuestion) => (
+              <div
+                key={question.id}
+                className="not-last:border-b border-b-gray-200 pb-4 "
+              >
+                {getQuestionType(question, register)}
+              </div>
+            ))}
+          </div>
 
-        <button type="submit"
-          // disabled={loading}
-          className="bg-orange-600 text-white px-4 py-2 rounded-lg disabled:bg-gray-400 text-sm mt-10 mx-auto flex">Submit form</button>
-      </form>
-     </div>
+          <button
+            type="submit"
+            disabled={insertingAnswersLoading || updateLoading || exam.status == 2}
+            className="bg-orange-600 text-white px-4 py-2 rounded-lg disabled:bg-gray-400 text-sm mt-10 mx-auto flex"
+          >
+            Submit form
+          </button>
+        </form>
+      </div>
     );
   }
 
-  if(exam?.status == 0) {
+  if (exam?.status == 0) {
     return (
-    <div className="max-w-sm mx-auto p-6 ">
-      <h2 className="text-lg font-bold mb-2 text-gray-800">
-        Are you sure you want to start the exam?
-      </h2>
+      <div className="max-w-sm mx-auto p-6 ">
+        <h2 className="text-lg font-bold mb-2 text-gray-800">
+          Are you sure you want to start the exam?
+        </h2>
 
-      <p className="text-sm text-gray-500 mb-4">
-        After starting the exam, the timer and rules may activate.
-      </p>
+        <p className="text-sm text-gray-500 mb-4">
+          After starting the exam, the timer and rules may activate.
+        </p>
 
-      <div className="h-px bg-gray-200 my-4" />
+        <div className="h-px bg-gray-200 my-4" />
 
-      <div className="flex gap-3">
-        <button
-          onClick={handleYes}
-          className="flex-1 py-2.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition"
-        >
-          Yes
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handleYes}
+            className="flex-1 py-2.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition"
+          >
+            Yes
+          </button>
 
-        <button
-          onClick={handleNo}
-          className="flex-1 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-700 text-sm font-medium hover:bg-gray-100 transition"
-        >
-          No
-        </button>
+          <button
+            onClick={handleNo}
+            className="flex-1 py-2.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-700 text-sm font-medium hover:bg-gray-100 transition"
+          >
+            No
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
   }
-
 }
