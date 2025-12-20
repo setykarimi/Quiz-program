@@ -16,21 +16,24 @@ export default function Page() {
   const { user } = useAuth();
   const { register, handleSubmit } = useForm();
 
-  const { data: examStatus, isLoading: loadingStatus, isError: examStatusError } = useQuery({
-    queryKey: ["user-exam-status"],
+  const { data: exam, isLoading: loadingExam, isError: examError } = useQuery<any>({
+    queryKey: ["user-exam-status", id, user?.id],
     queryFn: async () => {
+      if (!user) return null;
+
       const { data, error } = await supabase
         .from("user_exams")
-        .select("status")
+        .select(`status,exam_id,exams (title)`)
         .eq("exam_id", id)
-        .eq("user_id", user?.id)
+        .eq("user_id", user.id)
         .single();
 
       if (error) throw error;
       return data;
     },
-    enabled: !!user
+    enabled: !!user && !!id
   });
+
 
   const { mutate: getQuestions, data: questionsData, isPending, isError } = useMutation({
     mutationFn: async () => {
@@ -77,21 +80,21 @@ export default function Page() {
   }
 
   useEffect(()=> {
-    if(examStatus?.status == 1) getQuestions()
-  },[user, examStatus])
+    if(exam?.status == 1) getQuestions()
+  },[user, exam])
 
-  if (isPending || loadingStatus) {
+  if (isPending || loadingExam) {
     return <div>Loading ...</div>;
   }
 
-  if (isError || examStatusError) {
+  if (isError || examError) {
     return <div>Error ...</div>;
   }
 
-  if (examStatus?.status == 1 && questionsData) {
+  if (exam?.status == 1 && questionsData) {
     return (
      <div className="bg-white p-6 rounded-xl">
-      <h2>{}</h2>
+      <h2 className="font-bold mb-4 border-b border-b-gray-200 pb-4 text-lg">{exam?.exams?.title}</h2>
        <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-4">
           {questionsData.map((question: IQuestion) => (
@@ -107,7 +110,7 @@ export default function Page() {
     );
   }
 
-  if(examStatus?.status == 0) {
+  if(exam?.status == 0) {
     return (
     <div className="max-w-sm mx-auto p-6 ">
       <h2 className="text-lg font-bold mb-2 text-gray-800">
