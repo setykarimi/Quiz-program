@@ -28,12 +28,12 @@ const FormWrapper = () => {
 
 
 describe("Checkbox input", () =>{
-  test("renders input with label and placehollder", () => {
+  test("renders input with label", () => {
     render(<FormWrapper />)
     expect(screen.getByLabelText(/checkbox Input/i)).toBeInTheDocument()
   })
 
-  test("allow user to test in input", async () => {
+  test("allow user to test checkbox input", async () => {
     render(<FormWrapper />)
     const checkbox = screen.getByLabelText("checkbox Input") as HTMLInputElement;
 
