@@ -111,7 +111,7 @@ describe("update question modal", () => {
 
     await userEvent.selectOptions(section_id, "10");
 
-    await userEvent.selectOptions(type, "first");
+    await userEvent.selectOptions(type, "text");
 
     await userEvent.click(submitBtn);
 
@@ -119,7 +119,7 @@ describe("update question modal", () => {
       title: "Exam 1",
       answer: "my answer",
       section_id: "10",
-      type: "first",
+      type: "text",
     });
 
     expect(mockEq).toHaveBeenCalledWith("id", 4);
